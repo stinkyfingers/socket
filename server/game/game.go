@@ -9,12 +9,13 @@ import (
 )
 
 type Game struct {
-	ID          bson.ObjectId `bson:"_id" json:"_id"`
-	Round       Round         `bson:"round" json:"round"`
-	Players     []Player      `bson:"players" json:"players"`
-	Initialized bool          `bson:"initialized" json:"initialized"`
-	DealerDeck  []DealerCard  `bson:"dealerDeck" json:"dealerDeck"`
-	Deck        []Card        `bson:"deck" json:"deck"`
+	ID          bson.ObjectId     `bson:"_id" json:"_id"`
+	Round       Round             `bson:"round" json:"round"`
+	Players     []Player          `bson:"players" json:"players"`
+	Initialized bool              `bson:"initialized" json:"initialized"`
+	DealerDeck  []DealerCard      `bson:"dealerDeck" json:"dealerDeck"`
+	Deck        []Card            `bson:"deck" json:"deck"`
+	FinalScore  map[string][]Play `bson:"finalScore" json:"finalScore"` // PlayerIDHex to []Vote
 }
 
 type Round struct {
@@ -22,7 +23,7 @@ type Round struct {
 	Plays       map[string]Play   `bson:"plays,omitempty" json:"plays,omitempty"`
 	Votes       map[string]Play   `bson:"votes,omitempty" json:"votes,omitempty"`
 	Options     []Play            `bson:"options,omitempty" json:"options,omitempty"`
-	Score       map[string][]Play `bson:"score,omitempty" json:"score,omitempty"`
+	Score       map[string][]Play `bson:"score,omitempty" json:"score,omitempty"` //TODO is map[string]Play ok?
 	Previous    *Round            `bson:"previous" json:"-"`
 }
 
@@ -54,6 +55,9 @@ var collection = "difference-between"
 
 func (g *Game) Get() error {
 	err := db.Session.DB(db.DB).C(collection).FindId(g.ID).One(&g)
+	g.Round.Plays = make(map[string]Play)
+	g.Round.Votes = make(map[string]Play)
+	g.Round.Score = make(map[string][]Play)
 	return err
 }
 
@@ -82,6 +86,9 @@ func (g *Game) Deal() error {
 	}
 
 	total := len(g.Deck) - 1
+	if total < len(g.Players)-1 {
+		return errors.New("not enough cards in deck to deal cards")
+	}
 
 	for p := range g.Players {
 		for i := len(g.Players[p].Hand); i < cardsInHand; i++ {
@@ -214,6 +221,12 @@ func (g *Game) UpdateVotes() error {
 		g.Round.Score[play.Player.ID.Hex()] = append(g.Round.Score[play.Player.ID.Hex()], play)
 	}
 
+	// Check for game end
+	rounds := g.GetRounds()
+	if len(rounds) == roundsInGame {
+		return g.TallyScore(rounds)
+	}
+
 	// Next Round
 	newDealerCards, err := g.DrawCards()
 	if err != nil {
@@ -233,4 +246,30 @@ func (g *Game) UpdateVotes() error {
 		return err
 	}
 	return g.Update()
+}
+
+// GetRounds traverses a game's rounds into an array and returns it
+func (g *Game) GetRounds() []Round {
+	var rounds []Round
+	currentRound := g.Round
+	for {
+		rounds = append(rounds, currentRound)
+		if currentRound.Previous == nil {
+			break
+		}
+		prev := currentRound.Previous
+		currentRound = *prev
+	}
+	return rounds
+}
+
+// TallyScore traverses a game's rounds, appending the votes (plays) to a [playerID][]Vote map
+func (g *Game) TallyScore(rounds []Round) error {
+	g.FinalScore = make(map[string][]Play)
+	for _, round := range rounds {
+		for _, vote := range round.Votes {
+			g.FinalScore[vote.Player.ID.Hex()] = append(g.FinalScore[vote.Player.ID.Hex()], vote)
+		}
+	}
+	return nil
 }

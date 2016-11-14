@@ -7,13 +7,15 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+var playerCollection = "difference-between-players"
+
 func (p *Player) Create() error {
 	var err error
 	query := bson.M{
 		"name": p.Name,
 	}
 
-	count, err := db.Session.DB(db.DB).C(collection).Find(query).Count()
+	count, err := db.Session.DB(db.DB).C(playerCollection).Find(query).Count()
 	if err != nil {
 		return err
 	}
@@ -27,5 +29,5 @@ func (p *Player) Create() error {
 	// if err != nil {
 	// 	return err
 	// }
-	return db.Session.DB(db.DB).C(collection).Insert(&p)
+	return db.Session.DB(db.DB).C(playerCollection).Insert(&p)
 }
