@@ -1,0 +1,56 @@
+{
+	"player":{
+		"name":"john",
+		"password":"test"
+	},
+	"dealerDeck": [
+		{
+			"phrase": "Fat girls"
+		}, {
+			"phrase": "Chocolate milk"
+		}, {
+			"phrase": "Peeing in the shower"
+		}, {
+			"phrase": "Nuts"
+		}, {
+			"phrase": "Being pistol whipped"
+		}, {
+			"phrase": "Old men"
+		}, {
+			"phrase": "Assholes"
+		}, {
+			"phrase": "Juicy milfs"
+		}, {
+			"phrase": "An angry bartender"
+		}, {
+			"phrase": "Constant diarrhea"
+		}, {
+			"phrase": "Worrisome farts"
+		}],
+	"deck":[
+		{
+			"phrase": "Total volume of pubic hair"
+		}, {
+			"phrase": "The ability to shit on command"
+		}, {
+			"phrase": "Patience"
+		}, {
+			"phrase": "Preparedness"
+		}, {
+			"phrase": "Subjective judgement"
+		}, {
+			"phrase": "A few dollars"
+		}, {
+			"phrase": "One night of exceptionally poor judgement"
+		}, {
+			"phrase": "Blatant racism"
+		}, {
+			"phrase": "Fucking versus being fucked"
+		}, {
+			"phrase": "A regretable trip to the bathroom"
+		}, {
+			"phrase": "A lifetime of bad decisions"
+		}, {
+			"phrase": "Five or six dollars"
+		}]
+}
