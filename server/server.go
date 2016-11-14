@@ -74,12 +74,12 @@ func handler(ws *websocket.Conn) {
 			log.Print(err)
 			break //TODO - handle errors in WS
 		}
-		log.Print("P", p)
+
 		switch p.PlayType {
 		case "play":
-			games[id].Round.Plays[p.Player.Name] = p // TODO - switch to id.hex
+			games[id].Round.Plays[p.Player.ID.Hex()] = p // TODO - switch to id.hex
 		case "vote":
-			games[id].Round.Votes[p.Player.Name] = p
+			games[id].Round.Votes[p.Player.ID.Hex()] = p
 		default:
 			log.Print("type not supported")
 		}

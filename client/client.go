@@ -9,6 +9,7 @@ import (
 
 	"github.com/stinkyfingers/socket/server/game"
 	"golang.org/x/net/websocket"
+	"gopkg.in/mgo.v2/bson"
 )
 
 // Client needs to:
@@ -46,7 +47,7 @@ func main() {
 			log.Print("Dealer Cards: ", g.Round.DealerCards)
 			//get self for logging
 			for _, pl := range g.Players {
-				if pl.Name == *player {
+				if pl.ID.Hex() == *player {
 					log.Print("Hand: ", pl.Hand)
 				}
 			}
@@ -74,7 +75,7 @@ func main() {
 					Phrase: arr[1],
 				},
 				Player: game.Player{
-					Name: *player,
+					ID: bson.ObjectIdHex(*player),
 				},
 				PlayType: "play",
 			}
@@ -86,7 +87,7 @@ func main() {
 					Phrase: arr[1],
 				},
 				Player: game.Player{
-					Name: *player,
+					ID: bson.ObjectIdHex(*player),
 				},
 				PlayType: "vote",
 			}

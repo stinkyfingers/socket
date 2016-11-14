@@ -2,7 +2,6 @@ package game
 
 import (
 	"errors"
-	"log"
 	"math/rand"
 
 	"github.com/stinkyfingers/socket/server/db"
@@ -16,7 +15,6 @@ type Game struct {
 	Initialized bool          `bson:"initialized" json:"initialized"`
 	DealerDeck  []DealerCard  `bson:"dealerDeck" json:"dealerDeck"`
 	Deck        []Card        `bson:"deck" json:"deck"`
-	// PlayerMap
 }
 
 type Round struct {
@@ -25,7 +23,7 @@ type Round struct {
 	Votes       map[string]Play   `bson:"votes,omitempty" json:"votes,omitempty"`
 	Options     []Play            `bson:"options,omitempty" json:"options,omitempty"`
 	Score       map[string][]Play `bson:"score,omitempty" json:"score,omitempty"`
-	Previous    *Round            `bson:"previous" json:"previous"`
+	Previous    *Round            `bson:"previous" json:"-"`
 }
 
 type Card struct {
@@ -56,7 +54,6 @@ var collection = "difference-between"
 
 func (g *Game) Get() error {
 	err := db.Session.DB(db.DB).C(collection).FindId(g.ID).One(&g)
-	log.Print("E", err)
 	return err
 }
 
@@ -178,32 +175,25 @@ func (g *Game) ReplacePlayerCard(p Play) error {
 	return nil
 }
 
-// MOCKED
-// func (g *Game) Get() error {
-// 	// mocked
-// 	*g = Game{
-// 		ID: "1",
-// 		Round: Round{
-// 			DealerCards: []DealerCard{
-// 				{
-// 					Phrase: "dc1",
-// 				},
-// 				{
-// 					Phrase: "dc2",
-// 				},
-// 			},
-// 			Plays: make(map[string]Play),
-// 			Votes: make(map[string]Play),
-// 			Score: make(map[string][]Play),
-// 		},
-// 	}
-// 	return nil
-// }
-
 func (g *Game) UpdatePlays() error {
 	for _, play := range g.Round.Plays {
+		// assign other player fields
+		for i, player := range g.Players {
+			if player.ID == play.Player.ID {
+				play.Player = player
+				// remove played cards from players
+				for j, playerCard := range g.Players[i].Hand {
+					if playerCard.Phrase == play.Card.Phrase {
+						g.Players[i].Hand = append(g.Players[i].Hand[:j], g.Players[i].Hand[j+1:]...)
+					}
+				}
+			}
+		}
+		// assign to options
 		g.Round.Options = append(g.Round.Options, play)
 	}
+
+	// nullify plays
 	g.Round.Plays = make(map[string]Play)
 	return nil
 }
@@ -213,14 +203,34 @@ func (g *Game) UpdateVotes() error {
 		g.Round.Score = make(map[string][]Play)
 	}
 	for _, play := range g.Round.Votes {
-		g.Round.Score[play.Player.Name] = append(g.Round.Score[play.Player.Name], play)
+		// assign other player fields
+		for _, player := range g.Players {
+			if player.ID == play.Player.ID {
+				play.Player = player
+			}
+		}
 	}
-	g.Round.Votes = make(map[string]Play)
-	g.Round.Options = []Play{}
-	// TODO
-	// new round
-	// - new dealer cards
-	// players draw cards
-	// update game
-	return nil
+	for _, play := range g.Round.Votes {
+		g.Round.Score[play.Player.ID.Hex()] = append(g.Round.Score[play.Player.ID.Hex()], play)
+	}
+
+	// Next Round
+	newDealerCards, err := g.DrawCards()
+	if err != nil {
+		return err
+	}
+	lastRound := g.Round
+	r := Round{
+		DealerCards: newDealerCards,
+		Previous:    &lastRound,
+		Plays:       make(map[string]Play),
+		Votes:       make(map[string]Play),
+		Score:       make(map[string][]Play),
+	}
+	g.Round = r
+	err = g.Deal()
+	if err != nil {
+		return err
+	}
+	return g.Update()
 }
