@@ -43,7 +43,6 @@ func TestGetRounds(t *testing.T) {
 		Round: r3,
 	}
 	rounds := g.GetRounds()
-	t.Log(rounds)
 
 	if !reflect.DeepEqual(rounds, []Round{r3, r2, r1}) {
 		t.Error("Expected to find three rounds")

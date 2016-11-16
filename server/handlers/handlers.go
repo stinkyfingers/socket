@@ -33,6 +33,22 @@ func HandleTestSetup(w http.ResponseWriter, r *http.Request) {
 		HttpError{err, "json error", 500, w}.HandleErr()
 		return
 	}
+	dd := game.DealerDeck{
+		Cards: dealerDeck,
+	}
+	d := game.Deck{
+		Cards: deck,
+	}
+	err = dd.Create()
+	if err != nil {
+		HttpError{err, "error creating dealer deck", 500, w}.HandleErr()
+		return
+	}
+	err = d.Create()
+	if err != nil {
+		HttpError{err, "error creating deck", 500, w}.HandleErr()
+		return
+	}
 
 	//players
 	players, err := SetupPlayers()

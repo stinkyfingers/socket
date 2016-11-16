@@ -35,12 +35,6 @@ type DealerCard struct {
 	Phrase string `bson:"phrase" json:"phrase"`
 }
 
-type Player struct {
-	ID   bson.ObjectId `bson:"_id" json:"_id"`
-	Name string        `bson:"name" json:"name"`
-	Hand []Card        `bson:"hand" json:"hand"`
-}
-
 type Play struct {
 	Player   Player   `bson:"player" json:"player"`
 	Card     Card     `bson:"card" json:"card"`
@@ -71,11 +65,15 @@ func (g *Game) Create() error {
 }
 
 func (g *Game) AddPlayer(player Player) error {
+	err := g.Get()
+	if err != nil {
+		return err
+	}
 	if g.Initialized {
 		return errors.New("Game has already started")
 	}
 	g.Players = append(g.Players, player)
-	err := db.Session.DB(db.DB).C(collection).UpdateId(g.ID, g)
+	err = db.Session.DB(db.DB).C(collection).UpdateId(g.ID, g)
 	return err
 }
 
@@ -119,11 +117,11 @@ func (g *Game) DrawCards() ([]DealerCard, error) {
 }
 
 func (g *Game) Initialize() error {
-	if len(g.Deck) == 0 {
-		return errors.New("Starting game requires a deck")
+	if len(g.Deck) == 0 || len(g.DealerDeck) == 0 {
+		return errors.New("Starting game requires a deck & dealer deck")
 	}
-	if len(g.Players) < 2 {
-		return errors.New("Starting game requires two or more players")
+	if len(g.Players) < 1 {
+		return errors.New("Starting game requires two or more players") //TODO - make 2
 	}
 
 	g.Initialized = true

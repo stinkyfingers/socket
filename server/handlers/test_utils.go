@@ -34,11 +34,14 @@ func Setup(path string) ([]game.Card, []game.DealerCard, error) {
 func SetupPlayers() ([]game.Player, error) {
 	players := []game.Player{
 		{
-			Name: "Alice",
+			Name:     "Alice",
+			Password: "test",
 		}, {
-			Name: "Bob",
+			Name:     "Bob",
+			Password: "test",
 		}, {
-			Name: "Carl",
+			Name:     "Carl",
+			Password: "test",
 		},
 	}
 	for i := range players {

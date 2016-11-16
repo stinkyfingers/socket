@@ -8,14 +8,7 @@ import (
 	"github.com/stinkyfingers/socket/server/game"
 	"github.com/stinkyfingers/socket/server/handlers"
 	"golang.org/x/net/websocket"
-	"gopkg.in/mgo.v2/bson"
 )
-
-// Server needs to:
-// 1. Send each client Lead Cards and their Player Hand
-// 2. Receive each client's play
-// 3. Send each client Played Cards
-// 4. Receive each client's vote
 
 func main() {
 	err := db.NewSession()
@@ -23,83 +16,100 @@ func main() {
 		log.Fatal(err)
 	}
 
-	clients = make(map[string][]Client)
-	games = make(map[string]game.Game)
+	handlers.Clients = make(map[string][]handlers.Client)
+	handlers.Games = make(map[string]game.Game)
 
-	http.Handle("/", websocket.Handler(handler))
+	http.Handle("/", websocket.Handler(handlers.Game))
+
+	http.Handle("/game/new", Cors(http.HandlerFunc(handlers.HandleNewGame)))
+	http.Handle("/game/add", Cors(http.HandlerFunc(handlers.HandleAddPlayer)))
+	http.Handle("/game/init", Cors(http.HandlerFunc(handlers.HandleStartGame)))
+	http.Handle("/game", Cors(http.HandlerFunc(handlers.HandleGetGame)))
+
 	http.HandleFunc("/test", handlers.HandleTestSetup)
+	http.Handle("/auth", Cors(http.HandlerFunc(handlers.HandleAuthenticate)))
 	log.Fatal(http.ListenAndServe(":7000", nil))
 }
 
-type Client struct {
-	ws *websocket.Conn
-	IP string
+func Cors(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		if r.Method == "OPTIONS" {
+			return
+		}
+		h.ServeHTTP(w, r)
+	})
 }
 
-var clients map[string][]Client
-var games map[string]game.Game
+// type Client struct {
+// 	ws *websocket.Conn
+// 	IP string
+// }
 
-func handler(ws *websocket.Conn) {
-	id := ws.Request().URL.Query().Get("id")
+// var clients map[string][]Client
+// var games map[string]game.Game
 
-	var g game.Game
-	g.ID = bson.ObjectIdHex(id)
-	err := g.Get()
-	if err != nil {
-		log.Print(err)
-		return
-	}
-	games[g.ID.Hex()] = g
+// func handler(ws *websocket.Conn) {
+// 	id := ws.Request().URL.Query().Get("id")
 
-	// client return
-	client := Client{
-		ws,
-		ws.Request().RemoteAddr,
-	}
-	clients[id] = append(clients[id], client)
+// 	var g game.Game
+// 	g.ID = bson.ObjectIdHex(id)
+// 	err := g.Get()
+// 	if err != nil {
+// 		log.Print(err)
+// 		return
+// 	}
+// 	games[g.ID.Hex()] = g
 
-	for {
+// 	// client return
+// 	client := Client{
+// 		ws,
+// 		ws.Request().RemoteAddr,
+// 	}
+// 	clients[id] = append(clients[id], client)
 
-		for _, c := range clients[id] {
-			err = websocket.JSON.Send(c.ws, games[id])
-			if err != nil {
-				log.Print("WS client connection error: ", err)
-				// break
-			}
-		}
+// 	for {
 
-		var p game.Play
-		err = websocket.JSON.Receive(ws, &p)
-		if err != nil {
-			log.Print(err)
-			break //TODO - handle errors in WS
-		}
+// 		for _, c := range clients[id] {
+// 			err = websocket.JSON.Send(c.ws, games[id])
+// 			if err != nil {
+// 				log.Print("WS client connection error: ", err)
+// 				// break
+// 			}
+// 		}
 
-		switch p.PlayType {
-		case "play":
-			games[id].Round.Plays[p.Player.ID.Hex()] = p // TODO - switch to id.hex
-		case "vote":
-			games[id].Round.Votes[p.Player.ID.Hex()] = p
-		default:
-			log.Print("type not supported")
-		}
+// 		var p game.Play
+// 		err = websocket.JSON.Receive(ws, &p)
+// 		if err != nil {
+// 			log.Print(err)
+// 			break //TODO - handle errors in WS
+// 		}
 
-		ch := make(chan game.Game)
-		go func() {
-			if p.PlayType == "play" && len(games[id].Round.Plays) > 1 { //TODO -len equal to players
-				ga := games[id]
-				(&ga).UpdatePlays()
-				ch <- ga
-			} else if p.PlayType == "vote" && len(games[id].Round.Votes) > 1 {
-				ga := games[id]
-				(&ga).UpdateVotes()
-				ch <- ga
-			} else {
-				ch <- games[id]
-			}
-		}()
+// 		switch p.PlayType {
+// 		case "play":
+// 			games[id].Round.Plays[p.Player.ID.Hex()] = p // TODO - switch to id.hex
+// 		case "vote":
+// 			games[id].Round.Votes[p.Player.ID.Hex()] = p
+// 		default:
+// 			log.Print("type not supported")
+// 		}
 
-		ga := <-ch
-		games[id] = ga
-	}
-}
+// 		ch := make(chan game.Game)
+// 		go func() {
+// 			if p.PlayType == "play" && len(games[id].Round.Plays) > 1 { //TODO -len equal to players
+// 				ga := games[id]
+// 				(&ga).UpdatePlays()
+// 				ch <- ga
+// 			} else if p.PlayType == "vote" && len(games[id].Round.Votes) > 1 {
+// 				ga := games[id]
+// 				(&ga).UpdateVotes()
+// 				ch <- ga
+// 			} else {
+// 				ch <- games[id]
+// 			}
+// 		}()
+
+// 		ga := <-ch
+// 		games[id] = ga
+// 	}
+// }
