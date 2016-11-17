@@ -1,0 +1,30 @@
+.App {
+  text-align: center;
+}
+
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 1px;
+  color: white;
+}
+
+
+.navList {
+  margin: 0;
+}
+
+.navList > li {
+  display: inline-block;
+}
+
+.navList > li > a {
+  text-decoration: none;
+  padding: .2em;
+  color: #eee;
+}
+
+.navList > li > a:hover {
+  color: #aaa;
+}

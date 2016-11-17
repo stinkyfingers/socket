@@ -1,0 +1,18 @@
+
+
+
+.card {
+	border: solid 1px #111;
+	display: inline;
+	margin: .5em;
+	padding: 1em;
+	border-radius: .4em;
+	background-color: #eed;
+}
+
+
+
+.dealerCards {
+	display: block;
+	margin: 1.5em 0;
+}

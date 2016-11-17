@@ -1,0 +1,20 @@
+.deckList>tbody>tr>td {
+	border: solid black 1px;
+	padding: .4em;
+}
+
+.edit label input {
+	display: block;
+	width: 60%;
+	text-align:center;
+	margin:auto;
+	padding: .2em;
+}
+
+.cards input {
+	display: block;
+	width: 60%;
+	text-align:center;
+	margin:auto;
+	padding: .2em;
+}
