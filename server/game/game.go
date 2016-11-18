@@ -2,6 +2,7 @@ package game
 
 import (
 	"errors"
+	"log"
 	"math/rand"
 
 	"github.com/stinkyfingers/socket/server/db"
@@ -15,7 +16,7 @@ type Game struct {
 	Initialized bool              `bson:"initialized" json:"initialized"`
 	DealerDeck  []DealerCard      `bson:"dealerDeck" json:"dealerDeck"`
 	Deck        []Card            `bson:"deck" json:"deck"`
-	FinalScore  map[string][]Play `bson:"finalScore" json:"finalScore"` // PlayerIDHex to []Vote
+	FinalScore  map[string][]Play `bson:"finalScore,omitempty" json:"finalScore,omitempty"` // PlayerIDHex to []Vote
 }
 
 type Round struct {
@@ -216,7 +217,13 @@ func (g *Game) UpdateVotes() error {
 		}
 	}
 	for _, play := range g.Round.Votes {
-		g.Round.Score[play.Player.ID.Hex()] = append(g.Round.Score[play.Player.ID.Hex()], play)
+		for _, player := range g.Players {
+			for _, card := range player.Hand {
+				if play.Card.Phrase == card.Phrase {
+					g.Round.Score[player.ID.Hex()] = append(g.Round.Score[player.ID.Hex()], play)
+				}
+			}
+		}
 	}
 
 	// Check for game end
@@ -227,6 +234,7 @@ func (g *Game) UpdateVotes() error {
 
 	// Next Round
 	newDealerCards, err := g.DrawCards()
+
 	if err != nil {
 		return err
 	}
@@ -240,9 +248,11 @@ func (g *Game) UpdateVotes() error {
 	}
 	g.Round = r
 	err = g.Deal()
+	log.Print(err)
 	if err != nil {
 		return err
 	}
+	log.Print("update")
 	return g.Update()
 }
 
@@ -261,13 +271,13 @@ func (g *Game) GetRounds() []Round {
 	return rounds
 }
 
-// TallyScore traverses a game's rounds, appending the votes (plays) to a [playerID][]Vote map
+// TallyScore traverses a game's rounds, appending the scores to a [playerID][]Vote map
 func (g *Game) TallyScore(rounds []Round) error {
 	g.FinalScore = make(map[string][]Play)
 	for _, round := range rounds {
-		for _, vote := range round.Votes {
-			g.FinalScore[vote.Player.ID.Hex()] = append(g.FinalScore[vote.Player.ID.Hex()], vote)
+		for playerID, score := range round.Score {
+			g.FinalScore[playerID] = append(g.FinalScore[playerID], score...)
 		}
 	}
-	return nil
+	return g.Update()
 }

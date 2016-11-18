@@ -14,7 +14,7 @@ class InitializeGame extends Component {
 		if (status.game) {
 			this.setState({ game: status.game });
 			if (status.game.initialized) {
-				window.location('/play/' + status.game._id);
+				window.location.href = '/play/' + status.game._id;
 			}
 		}
 		if (status.error) {

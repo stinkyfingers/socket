@@ -1,40 +1,40 @@
 import React, { Component } from 'react';
-// import GameActions from '../actions/game';
-// import GameStore from '../stores/game';
+import GameActions from '../actions/game';
+import GameStore from '../stores/game';
 import Initialize from './initializeGame';
 import Round from './round';
 
 class Play extends Component {
-	// constructor() {
-	// 	super();
-	// 	// this.onStatusChange = this.onStatusChange.bind(this);
-	// }
-
-	// onStatusChange(status) {
-	// 	if (status.game) {
-	// 		// console.log('updating game', status.game)
-	// 		// this.setState({ game: status.game });
-	// 	}
-	// 	if (status.error) {
-	// 		console.log(status.error)
-	// 		// this.setState({ error: status.error });
-	// 	}
-	// }
-
-	componentWillMount() {
-    	// const u = location.href;
-    	// const index = u.lastIndexOf("/") + 1;
-    	// const id = u.substr(index);
-    	// GameActions.connect(id);
+	constructor() {
+		super();
+		this.onStatusChange = this.onStatusChange.bind(this);
 	}
 
-	// componentDidMount() {
-	// 	this.unsubscribe = GameStore.listen(this.onStatusChange);
-	// }
+	onStatusChange(status) {
+		if (status.game) {
+			// console.log('updating game', status.game)
+			this.setState({ game: status.game });
+		}
+		if (status.error) {
+			console.log(status.error)
+			// this.setState({ error: status.error });
+		}
+	}
 
-	// componentWillUnmount() {
-	// 	this.unsubscribe();
-	// }
+	componentWillMount() {
+    	const u = location.href;
+    	const index = u.lastIndexOf("/") + 1;
+    	const id = u.substr(index);
+    	GameActions.connect(id);
+	}
+
+	componentDidMount() {
+		this.unsubscribe = GameStore.listen(this.onStatusChange);
+	}
+
+	componentWillUnmount() {
+		this.unsubscribe();
+	}
 
 	renderGame() {
 		if (this.props.game.initialized === false) {

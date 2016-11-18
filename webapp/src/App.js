@@ -5,7 +5,7 @@ import Logout from './components/logout';
 import UserStore from './stores/user';
 import GameStore from './stores/game';
 import UserActions from'./actions/user';
-import GameActions from './actions/game';
+// import GameActions from './actions/game';
 import Play from './components/play';
 import Decks from './components/decks';
 import Edit from './components/edit';
@@ -45,10 +45,10 @@ class App extends Component {
 
   componentWillMount() {
     UserActions.getUser();
-    const u = location.href;
-    const index = u.lastIndexOf("/") + 1;
-    const id = u.substr(index);
-    GameActions.connect(id);
+    // const u = location.href;
+    // const index = u.lastIndexOf("/") + 1;
+    // const id = u.substr(index);
+    // GameActions.connect(id);
   }
 
   componentDidMount() {

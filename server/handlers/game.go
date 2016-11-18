@@ -26,6 +26,10 @@ var Games map[string]game.Game
 
 func Game(ws *websocket.Conn) {
 	id := ws.Request().URL.Query().Get("id")
+	log.Print("ID", id)
+	if id == "" {
+		return
+	}
 
 	var g game.Game
 	g.ID = bson.ObjectIdHex(id)
@@ -61,7 +65,7 @@ func Game(ws *websocket.Conn) {
 			log.Print(err)
 			break //TODO - handle errors in WS
 		}
-
+		log.Print("received ", p)
 		switch p.PlayType {
 		case "play":
 			Games[id].Round.Plays[p.Player.ID.Hex()] = p // TODO - switch to id.hex
@@ -79,6 +83,7 @@ func Game(ws *websocket.Conn) {
 				ch <- ga
 			} else if p.PlayType == "vote" && len(Games[id].Round.Votes) > 1 {
 				ga := Games[id]
+				log.Print("update votes")
 				(&ga).UpdateVotes()
 				ch <- ga
 			} else {

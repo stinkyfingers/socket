@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-// import GameActions from '../actions/game';
+import GameActions from '../actions/game';
 // import GameStore from '../stores/game';
 import DealerCards from './dealerCards';
 import Cards from './cards';
+import FinalScore from './finalScore';
 
 
 class Round extends Component {
-	// constructor() {
-		// super();
+	constructor() {
+		super();
 		// this.onStatusChange = this.onStatusChange.bind(this);
-	// }
+		this.handleClick = this.handleClick.bind(this);
+	}
 
 	// onStatusChange(status) {
 	// 	console.log(status)
@@ -30,13 +32,23 @@ class Round extends Component {
 		// GameStore.listen(this.onStatusChange);
 	}
 
+	handleClick(e) {
+		// const card = e.target.dataset.value;
+		const play = {
+			playType: 'vote',
+			card: e,
+			player: this.props.user
+		}
+		GameActions.play(this.props.game._id, this.props.user, play);
+	}
+
 	renderVotes() {
 		let cards = [];
 		for (const i in this.props.game.round.options) {
 			if (!this.props.game.round.options) {
 				continue;
 			}
-			cards.push(<div key={'choice' + i}className="optionCard card" onClick={this.handleClick} data-value={this.props.game.round.options[i].card.phrase}>{this.props.game.round.options[i].card.phrase}</div>)
+			cards.push(<div key={'choice' + i}className="optionCard card" onClick={() => this.handleClick(this.props.game.round.options[i].card)} data-value={this.props.game.round.options[i].card}>{this.props.game.round.options[i].card.phrase}</div>)
 		}
 		return (
 			<div className="options">
@@ -88,7 +100,8 @@ class Round extends Component {
 	render() {
 		return (
 			<div className="play">Round: 
-				{this.props && this.props.game && this.props.game.round ? this.renderRound() : null}
+				{this.props && this.props.game && this.props.game.round && !this.props.game.finalScore ? this.renderRound() : null}
+				{this.props && this.props.game && this.props.game.finalScore ? <FinalScore game={this.props.game} user={this.props.user} /> : null}
 			</div>
 		);
 	}

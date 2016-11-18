@@ -8,7 +8,8 @@ var GameActions = Reflux.createActions([
 	'getGameFromStorage',
 	'joinGame',
 	'play',
-	'connect'
+	'connect',
+	'unsetGame'
 ]);
 
 module.exports = GameActions;

@@ -82,7 +82,7 @@ var GameStore = Reflux.createStore({
 
 	play: function(id, user, play) {
 		const ws = this.ws;
-		console.log('playing',ws)
+		console.log('playing',play)
 
 		ws.send(JSON.stringify(play));
 
