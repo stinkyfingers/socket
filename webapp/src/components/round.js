@@ -43,12 +43,21 @@ class Round extends Component {
 	}
 
 	renderVotes() {
+		console.log(this.props.game)
 		let cards = [];
 		for (const i in this.props.game.round.options) {
 			if (!this.props.game.round.options) {
 				continue;
 			}
-			cards.push(<div key={'choice' + i}className="optionCard card" onClick={() => this.handleClick(this.props.game.round.options[i].card)} data-value={this.props.game.round.options[i].card}>{this.props.game.round.options[i].card.phrase}</div>)
+			// mark player's card
+			let yours = null;
+			if (this.props.game.round.options[i].player._id === this.props.user._id) {
+				yours = <span className="youPlayed">(You played this, genius)</span>;
+			}
+
+			cards.push(<div key={'choice' + i} className="optionCard card" onClick={() => this.handleClick(this.props.game.round.options[i].card)} data-value={this.props.game.round.options[i].card}>
+				{this.props.game.round.options[i].card.phrase} {yours}
+			</div>);
 		}
 		return (
 			<div className="options">
@@ -70,7 +79,6 @@ class Round extends Component {
 		}
 
 		if (this.props.game.round.options && this.props.game.round.options.length > 0) {
-			console.log("TIME TO VOTE");
 			return this.renderVotes();
 		} else {
 			return this.renderCards();
@@ -97,11 +105,22 @@ class Round extends Component {
 
 	}
 
+	renderPreviousRound() {
+		const p = this.props.game.round.previous;
+		console.log(p)
+		return (<div className="previous">
+			TODO - previous round - wins
+			</div>
+		);
+	}
+
 	render() {
+		console.log(this.props.game)
 		return (
 			<div className="play">Round: 
 				{this.props && this.props.game && this.props.game.round && !this.props.game.finalScore ? this.renderRound() : null}
 				{this.props && this.props.game && this.props.game.finalScore ? <FinalScore game={this.props.game} user={this.props.user} /> : null}
+				{this.props && this.props.game && this.props.game.round && this.props.game.round.previous ? this.renderPreviousRound() : null}
 			</div>
 		);
 	}

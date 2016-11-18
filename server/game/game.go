@@ -17,19 +17,22 @@ type Game struct {
 	DealerDeck  []DealerCard      `bson:"dealerDeck" json:"dealerDeck"`
 	Deck        []Card            `bson:"deck" json:"deck"`
 	FinalScore  map[string][]Play `bson:"finalScore,omitempty" json:"finalScore,omitempty"` // PlayerIDHex to []Vote
+	StartedBy   string            `bson:"startedBy" json:"startedBy"`
 }
 
 type Round struct {
-	DealerCards []DealerCard      `bson:"dealerCards" json:"dealerCards"`
-	Plays       map[string]Play   `bson:"plays,omitempty" json:"plays,omitempty"`
-	Votes       map[string]Play   `bson:"votes,omitempty" json:"votes,omitempty"`
-	Options     []Play            `bson:"options,omitempty" json:"options,omitempty"`
-	Score       map[string][]Play `bson:"score,omitempty" json:"score,omitempty"` //TODO is map[string]Play ok?
-	Previous    *Round            `bson:"previous" json:"-"`
+	DealerCards     []DealerCard      `bson:"dealerCards" json:"dealerCards"`
+	Plays           map[string]Play   `bson:"plays,omitempty" json:"plays,omitempty"`
+	Votes           map[string]Play   `bson:"votes,omitempty" json:"votes,omitempty"`
+	Options         []Play            `bson:"options,omitempty" json:"options,omitempty"`
+	Score           map[string][]Play `bson:"score,omitempty" json:"score,omitempty"` //TODO is map[string]Play ok?
+	Previous        *Round            `bson:"previous" json:"-"`
+	MostRecentVotes map[string]Play   `bson:"mostRecentVotes" json:"mostRecentVotes"`
 }
 
 type Card struct {
-	Phrase string `bson:"phrase" json:"phrase"`
+	Phrase   string `bson:"phrase" json:"phrase"`
+	PlayerID string `bson:"playerId" json:"playerId"`
 }
 
 type DealerCard struct {
@@ -62,6 +65,9 @@ func (g *Game) Update() error {
 
 func (g *Game) Create() error {
 	g.ID = bson.NewObjectId()
+	if len(g.Players) == 1 {
+		g.StartedBy = g.Players[0].ID.Hex()
+	}
 	return db.Session.DB(db.DB).C(collection).Insert(&g)
 }
 
@@ -74,6 +80,9 @@ func (g *Game) AddPlayer(player Player) error {
 		return errors.New("Game has already started")
 	}
 	g.Players = append(g.Players, player)
+	if len(g.Players) == 1 {
+		g.StartedBy = g.Players[0].ID.Hex()
+	}
 	err = db.Session.DB(db.DB).C(collection).UpdateId(g.ID, g)
 	return err
 }
@@ -94,6 +103,7 @@ func (g *Game) Deal() error {
 			index := rand.Intn(total)
 			total--
 			c := g.Deck[index]
+			c.PlayerID = g.Players[p].ID.Hex()
 			thisPlayer := g.Players[p]
 			thisPlayer.Hand = append(thisPlayer.Hand, c)
 			g.Players[p] = thisPlayer
@@ -170,6 +180,7 @@ func (g *Game) ReplacePlayerCard(p Play) error {
 		for i, c := range g.Players[pid].Hand {
 			if c.Phrase == p.Card.Phrase {
 				newCard := g.DrawNewCard()
+				newCard.PlayerID = g.Players[pid].ID.Hex()
 				g.Players[pid].Hand[i] = newCard
 				replaced = true
 			}
@@ -216,14 +227,10 @@ func (g *Game) UpdateVotes() error {
 			}
 		}
 	}
+
+	// TODO - check
 	for _, play := range g.Round.Votes {
-		for _, player := range g.Players {
-			for _, card := range player.Hand {
-				if play.Card.Phrase == card.Phrase {
-					g.Round.Score[player.ID.Hex()] = append(g.Round.Score[player.ID.Hex()], play)
-				}
-			}
-		}
+		g.Round.Score[play.Card.PlayerID] = append(g.Round.Score[play.Card.PlayerID], play)
 	}
 
 	// Check for game end
@@ -234,25 +241,25 @@ func (g *Game) UpdateVotes() error {
 
 	// Next Round
 	newDealerCards, err := g.DrawCards()
-
 	if err != nil {
 		return err
 	}
+
 	lastRound := g.Round
 	r := Round{
-		DealerCards: newDealerCards,
-		Previous:    &lastRound,
-		Plays:       make(map[string]Play),
-		Votes:       make(map[string]Play),
-		Score:       make(map[string][]Play),
+		DealerCards:     newDealerCards,
+		Previous:        &lastRound,
+		Plays:           make(map[string]Play),
+		Votes:           make(map[string]Play),
+		Score:           make(map[string][]Play),
+		MostRecentVotes: g.Round.Votes,
 	}
 	g.Round = r
 	err = g.Deal()
-	log.Print(err)
 	if err != nil {
 		return err
 	}
-	log.Print("update")
+
 	return g.Update()
 }
 
@@ -276,8 +283,13 @@ func (g *Game) TallyScore(rounds []Round) error {
 	g.FinalScore = make(map[string][]Play)
 	for _, round := range rounds {
 		for playerID, score := range round.Score {
+			log.Print("V(OTE", playerID)
+
 			g.FinalScore[playerID] = append(g.FinalScore[playerID], score...)
 		}
 	}
-	return g.Update()
+	log.Print("TALLY")
+	err := g.Update()
+	log.Print(err)
+	return err
 }

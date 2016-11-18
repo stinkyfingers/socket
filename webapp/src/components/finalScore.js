@@ -1,22 +1,30 @@
 import React, { Component } from 'react';
 import GameActions from '../actions/game';
-// import GameStore from '../stores/game';
-
-
 
 class FinalScore extends Component {
 
-
-	componentWillMount() {
-	}
 
 	componentDidMount() {
 		GameActions.unsetGame()
 	}
 
 	renderFinalScore() {
-		console.log(this.props.game.finalScore)
-		return (<div>TODO</div>);
+		let players = [];
+
+		for (const i in this.props.game.players) {
+			if (!this.props.game.players[i]) {
+				continue;
+			}
+			for (const id in this.props.game.finalScore) {
+				if (!this.props.game.finalScore[id]) {
+					continue;
+				}
+				if (id === this.props.game.players[i]._id) {
+					players.push(<div key={'wins'+id}className="wins">Player: {this.props.game.players[i].name} ... Votes: {this.props.game.finalScore[id].length}</div> );
+				}
+			}
+		}
+		return (<div>{players}</div>);
 
 	}
 

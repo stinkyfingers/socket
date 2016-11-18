@@ -10,6 +10,7 @@ class FindGame extends Component {
 		this.onStatusChange = this.onStatusChange.bind(this);
 		this.handleClick = this.handleClick.bind(this);
 		this.handleChange = this.handleChange.bind(this);
+		this.playerJoined = false;
 	}
 
 	onStatusChange(status) {
@@ -31,6 +32,14 @@ class FindGame extends Component {
 	componentDidMount() {
 		GameStore.listen(this.onStatusChange);
 		UserStore.listen(this.onStatusChange);
+
+		if (this.state && this.state.game && this.state.user) {
+			for (const i in this.state.game.players) {
+				if (this.state.user._id === this.state.game.players[i]._id) {
+					this.playerJoined = true;
+				}
+			}
+		}
 	}
 
 	handleClick() {
@@ -57,12 +66,20 @@ class FindGame extends Component {
 		}
 		return (
 			<div>
-				<a href={'/create/' + this.state.game._id} >Play</a>
+				<a href={'/play/' + this.state.game._id} >Play</a>
 			</div>
 		);
 	}
 
 	render() {
+		if (this.state && this.state.game && this.state.user) {
+			for (const i in this.state.game.players) {
+				if (this.state.user._id === this.state.game.players[i]._id) {
+					this.playerJoined = true;
+				}
+			}
+		}
+		console.log(this)
 		return (
 			<div className="findGame">Find Game
 				<label htmlFor="id">
@@ -70,7 +87,7 @@ class FindGame extends Component {
 				</label>
 				<button onClick={this.handleClick}>Search</button>
 				{this.state && this.state.game && this.state.game.initialized === false ? this.renderPlayGame() : null}
-				{this.state && this.state.game && this.state.game.initialized === true ? <div className="started">Game has already started</div> : null}
+				{this.state && this.state.game && this.state.game.initialized && !this.playerJoined === true ? <div className="started">Game has already started</div> : null}
 			</div>
 		);
 	}

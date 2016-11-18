@@ -1,41 +1,20 @@
 import React, { Component } from 'react';
 import GameActions from '../actions/game';
-// import GameStore from '../stores/game';
 import '../css/card.css';
 
 class Cards extends Component {
 	constructor() {
 		super();
-		// this.onStatusChange = this.onStatusChange.bind(this);
 		this.handleClick = this.handleClick.bind(this);
 	}
 
-	// onStatusChange(status) {
-		// if (status.game) {
-		// 	this.setState({ game: status.game });
-		// }
-		// if (status.error) {
-		// 	console.log(status.error)
-		// 	this.setState({ error: status.error });
-		// }
-	// }
-
-	componentWillMount() {
-	}
-
-	componentDidMount() {
-		// GameStore.listen(this.onStatusChange);
-	}
-
-	handleClick(e) {
-		const phrase = e.target.dataset.value;
+	handleClick(card) {
 		const play = {
 			playType: 'play',
 			player: this.props.user,
-			card: {
-				phrase: phrase
-			}
+			card: card
 		}
+		this.playedCard = play.card;
 		GameActions.play(this.props.game._id, this.props.user, play);
 	}
 
@@ -45,20 +24,40 @@ class Cards extends Component {
 			// TODO handle error
 			return
 		}
-		const cards = (
+		const cards = [];
+		for (const i in this.props.cards) {
+			if (!this.props.cards[i]) {
+				continue;
+			}
+			if (this.playedCard && this.playedCard.phrase === this.props.cards[i].phrase){
+				this.props.cards.splice(i);
+			} else{
+				cards.push(<div key={'card' + i} className="playerCard card" onClick={() => {this.handleClick(this.props.cards[i])}}>{this.props.cards[i].phrase}</div>)
+			}
+		}
+		return (
 			<div className="playerCards">
-				<div className="playerCard card" onClick={this.handleClick} data-value={this.props.cards[0].phrase}>{this.props.cards[0].phrase}</div>
-				<div className="playerCard card" onClick={this.handleClick} data-value={this.props.cards[1].phrase}>{this.props.cards[1].phrase}</div>
-				<div className="playerCard card" onClick={this.handleClick} data-value={this.props.cards[2].phrase}>{this.props.cards[2].phrase}</div>
+				{cards}
 			</div>
-			);
-		return cards;
+		);
+	}
+
+	renderPlayedCard(){
+		if (!this.playedCard) {
+			return null;
+		}
+		return (
+			<div className="playedCard card">
+				{this.playedCard.phrase}
+			</div>
+		);
 	}
 
 	render() {
 		return (
 			<div className="play">Player Cards: 
 				{this.props && this.props.cards ? this.renderCards() : null}
+				{this.renderPlayedCard()}
 			</div>
 		);
 	}

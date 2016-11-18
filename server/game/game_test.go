@@ -48,3 +48,50 @@ func TestGetRounds(t *testing.T) {
 		t.Error("Expected to find three rounds")
 	}
 }
+
+func TestUpdateVotes(t *testing.T) {
+	id1 := bson.NewObjectId()
+	id2 := bson.NewObjectId()
+	g := Game{
+		Players: []Player{
+			{
+				Name: "Jim",
+				Hand: []Card{
+					{Phrase: "test"},
+					{Phrase: "test2"},
+				},
+				ID: id1,
+			},
+			{
+				Name: "Fred",
+				Hand: []Card{
+					{Phrase: "test3"},
+					{Phrase: "test4"},
+				},
+				ID: id2,
+			},
+		},
+		Round: Round{
+			Votes: map[string]Play{
+				id1.Hex(): {
+					Card: Card{
+						Phrase: "test",
+					},
+					Player: Player{ID: id1},
+				}, id2.Hex(): {
+					Card: Card{
+						Phrase: "test",
+					},
+					Player: Player{ID: id1},
+				},
+			},
+		},
+		ID:         bson.NewObjectId(),
+		DealerDeck: []DealerCard{{Phrase: ""}, {Phrase: ""}, {Phrase: ""}, {Phrase: ""}, {Phrase: ""}, {Phrase: ""}, {Phrase: ""}},
+		Deck:       []Card{{}, {}, {}, {}},
+	}
+	err := g.UpdateVotes()
+	if err != nil {
+		t.Error(err)
+	}
+}
