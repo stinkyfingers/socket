@@ -38,7 +38,7 @@ class Play extends Component {
 
 	renderGame() {
 		if (this.props.game.initialized === false) {
-			return (<Initialize game={this.props.game} />);
+			return (<Initialize game={this.props.game} user={this.props.user}/>);
 		}
 		return (<Round game={this.props.game} user={this.props.user} />);
 

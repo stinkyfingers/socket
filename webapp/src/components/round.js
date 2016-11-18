@@ -86,6 +86,7 @@ class Round extends Component {
 	}
 
 	renderCards() {
+		console.log(this.props.game.round.dealerCards)
 		let cards = [];
 		for (const i in this.props.game.players) {
 			if (!this.props.game.players[i]) {
@@ -105,22 +106,32 @@ class Round extends Component {
 
 	}
 
-	renderPreviousRound() {
-		const p = this.props.game.round.previous;
-		console.log(p)
-		return (<div className="previous">
-			TODO - previous round - wins
+	renderPreviousResults() {
+		const p = this.props.game.round.mostRecentResults;
+		var votes = [];
+		for (let id in p.votes) {
+			if (!p.votes[id]) {
+				continue;
+			}
+				votes.push(<span className="vote" key={'votes'+id}><DealerCards dealerCards={p.dealerCards} /><div className="card">{p.votes[id].card.phrase}</div>Played by {p.votes[id].card.player.name}</span>);
+		}
+
+
+		return (
+			<div className="previous">
+				<h3>Last Round</h3>
+				{votes}
 			</div>
 		);
 	}
 
 	render() {
-		console.log(this.props.game)
 		return (
 			<div className="play">Round: 
 				{this.props && this.props.game && this.props.game.round && !this.props.game.finalScore ? this.renderRound() : null}
 				{this.props && this.props.game && this.props.game.finalScore ? <FinalScore game={this.props.game} user={this.props.user} /> : null}
-				{this.props && this.props.game && this.props.game.round && this.props.game.round.previous ? this.renderPreviousRound() : null}
+				<hr />
+				{this.props && this.props.game && this.props.game.round && this.props.game.round.mostRecentResults ? this.renderPreviousResults() : null}
 			</div>
 		);
 	}

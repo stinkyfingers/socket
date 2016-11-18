@@ -2,7 +2,7 @@ package game
 
 import (
 	"errors"
-	"log"
+	// "log"
 	"math/rand"
 
 	"github.com/stinkyfingers/socket/server/db"
@@ -21,18 +21,22 @@ type Game struct {
 }
 
 type Round struct {
-	DealerCards     []DealerCard      `bson:"dealerCards" json:"dealerCards"`
-	Plays           map[string]Play   `bson:"plays,omitempty" json:"plays,omitempty"`
-	Votes           map[string]Play   `bson:"votes,omitempty" json:"votes,omitempty"`
-	Options         []Play            `bson:"options,omitempty" json:"options,omitempty"`
-	Score           map[string][]Play `bson:"score,omitempty" json:"score,omitempty"` //TODO is map[string]Play ok?
-	Previous        *Round            `bson:"previous" json:"-"`
-	MostRecentVotes map[string]Play   `bson:"mostRecentVotes" json:"mostRecentVotes"`
+	DealerCards       []DealerCard      `bson:"dealerCards" json:"dealerCards"`
+	Plays             map[string]Play   `bson:"plays,omitempty" json:"plays,omitempty"`
+	Votes             map[string]Play   `bson:"votes,omitempty" json:"votes,omitempty"`
+	Options           []Play            `bson:"options,omitempty" json:"options,omitempty"`
+	Score             map[string][]Play `bson:"score,omitempty" json:"score,omitempty"` //TODO is map[string]Play ok?
+	Previous          *Round            `bson:"previous" json:"-"`
+	MostRecentResults MostRecentResults `bson:"mostRecentResults" json:"mostRecentResults"` // last round's results
+}
+type MostRecentResults struct {
+	DealerCards []DealerCard    `bson:"dealerCards" json:"dealerCards"`
+	Votes       map[string]Play `bson:"votes" json:"votes"`
 }
 
 type Card struct {
-	Phrase   string `bson:"phrase" json:"phrase"`
-	PlayerID string `bson:"playerId" json:"playerId"`
+	Phrase string `bson:"phrase" json:"phrase"`
+	Player Player `bson:"player,omitempty" json:"player,omitempty"` // player that holds/plays card
 }
 
 type DealerCard struct {
@@ -103,7 +107,7 @@ func (g *Game) Deal() error {
 			index := rand.Intn(total)
 			total--
 			c := g.Deck[index]
-			c.PlayerID = g.Players[p].ID.Hex()
+			c.Player = g.Players[p]
 			thisPlayer := g.Players[p]
 			thisPlayer.Hand = append(thisPlayer.Hand, c)
 			g.Players[p] = thisPlayer
@@ -180,7 +184,7 @@ func (g *Game) ReplacePlayerCard(p Play) error {
 		for i, c := range g.Players[pid].Hand {
 			if c.Phrase == p.Card.Phrase {
 				newCard := g.DrawNewCard()
-				newCard.PlayerID = g.Players[pid].ID.Hex()
+				newCard.Player = g.Players[pid]
 				g.Players[pid].Hand[i] = newCard
 				replaced = true
 			}
@@ -230,7 +234,7 @@ func (g *Game) UpdateVotes() error {
 
 	// TODO - check
 	for _, play := range g.Round.Votes {
-		g.Round.Score[play.Card.PlayerID] = append(g.Round.Score[play.Card.PlayerID], play)
+		g.Round.Score[play.Card.Player.ID.Hex()] = append(g.Round.Score[play.Card.Player.ID.Hex()], play)
 	}
 
 	// Check for game end
@@ -247,12 +251,15 @@ func (g *Game) UpdateVotes() error {
 
 	lastRound := g.Round
 	r := Round{
-		DealerCards:     newDealerCards,
-		Previous:        &lastRound,
-		Plays:           make(map[string]Play),
-		Votes:           make(map[string]Play),
-		Score:           make(map[string][]Play),
-		MostRecentVotes: g.Round.Votes,
+		DealerCards: newDealerCards,
+		Previous:    &lastRound,
+		Plays:       make(map[string]Play),
+		Votes:       make(map[string]Play),
+		Score:       make(map[string][]Play),
+		MostRecentResults: MostRecentResults{
+			Votes:       g.Round.Votes,
+			DealerCards: g.Round.DealerCards,
+		},
 	}
 	g.Round = r
 	err = g.Deal()
@@ -283,13 +290,22 @@ func (g *Game) TallyScore(rounds []Round) error {
 	g.FinalScore = make(map[string][]Play)
 	for _, round := range rounds {
 		for playerID, score := range round.Score {
-			log.Print("V(OTE", playerID)
-
 			g.FinalScore[playerID] = append(g.FinalScore[playerID], score...)
 		}
 	}
-	log.Print("TALLY")
+
+	r := Round{
+		Previous: &g.Round,
+		Plays:    make(map[string]Play),
+		Votes:    make(map[string]Play),
+		Score:    make(map[string][]Play),
+		MostRecentResults: MostRecentResults{
+			Votes:       g.Round.Votes,
+			DealerCards: g.Round.DealerCards,
+		},
+	}
+	g.Round = r
+
 	err := g.Update()
-	log.Print(err)
 	return err
 }

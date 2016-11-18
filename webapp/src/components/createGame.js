@@ -65,7 +65,7 @@ class CreateGame extends Component {
 	handleInitGameButton() {
 		console.log(this.props)
 		if (this.props.user._id === this.state.game.startedBy) {
-			return (<InitializeGame game={this.state.game} />);
+			return (<InitializeGame game={this.state.game} user={this.props.user}/>);
 		}
 		return (<div className="waitTostart">Waiting to start...</div>);
 	}

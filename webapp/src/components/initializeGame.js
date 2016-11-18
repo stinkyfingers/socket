@@ -31,12 +31,34 @@ class InitializeGame extends Component {
 		GameActions.initGame(this.props.game);
 	}
 
+	renderStart() {
+		return (
+			<div className="startGame">
+				<h3>Have all your players joined? Then, it may be time to...</h3>
+				<button className="initGame" onClick={this.handleInitGame}>Start Game</button>
+			</div>
+		);
+	}
+
+	renderWaiting() {
+		let player = null;
+		for (let i in this.props.game.players) {
+			if (this.props.game.players[i]._id !== this.props.game.startedBy) {
+				continue;
+			}
+			player = this.props.game.players[i];
+		}
+		return (
+			<div className="startGame">
+				<h3>Waiting for {player.name} to start the game.</h3>
+			</div>
+		);
+	}
+
 	render() {
 		return (
 			<div className="initGame">
-				<h3>Have all your players joined? Then, it may be time to...</h3>
-				<button className="initGame" onClick={this.handleInitGame}>Start Game
-				</button>
+				{this.props && this.props.user._id === this.props.game.startedBy ? this.renderStart() : this.renderWaiting()}
 			</div>
 		);
 	}
