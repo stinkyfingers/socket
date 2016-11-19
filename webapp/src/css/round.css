@@ -1,0 +1,51 @@
+
+.dealerCardsElement, .cardsElement {
+	display: block;
+}
+
+.dealerCardsContainer span,.dealerCardsContainer div {
+	display: block;
+}
+
+.playerCardsContainer span,.playerCardsContainer div {
+	display: block;
+}
+
+.optionsContainer span,.optionsContainer div {
+	display: block;
+}
+
+.playerCardsDivider {
+	background-color: #ddd;
+	height: 1px;
+	margin: 1em;
+}
+.previousCard {
+	padding: 0 .4em;
+	font-style: italic;
+}
+.total {
+	font-weight: 600;
+}
+.youPlayed {
+	font-style: italic;
+}
+.active {
+	opacity: .5;
+}
+
+@media (min-width: 600px) {
+
+	.dealerCardsContainer span,.dealerCardsContainer div {
+		display: inline-block;
+	}
+
+	.playerCardsContainer span,.playerCardsContainer div {
+		display: inline-block;
+	}
+
+	.optionsContainer span,.optionsContainer div {
+		display: inline-block;
+	}
+
+}

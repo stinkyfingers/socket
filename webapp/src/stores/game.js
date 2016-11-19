@@ -82,13 +82,10 @@ var GameStore = Reflux.createStore({
 
 	play: function(id, user, play) {
 		const ws = this.ws;
-		console.log('playing',play)
-
 		ws.send(JSON.stringify(play));
 
 		ws.onmessage = ((msg) => {
 			const game = JSON.parse(msg.data);
-			// console.log('play msg', game);
 
 			this.storeGame(game);
 			this.trigger({ gameUpdate: game });
@@ -102,7 +99,6 @@ var GameStore = Reflux.createStore({
 		});
 		ws.onmessage = ((msg) => {
 			const game = JSON.parse(msg.data);
-			// console.log('msg', game);
 
 			this.storeGame(game);
 			this.trigger({ game: game });

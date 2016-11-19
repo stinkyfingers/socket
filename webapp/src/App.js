@@ -92,7 +92,6 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.state)
     const game = this.state && this.state.game ? this.state.game : null;
     const user = this.state && this.state.user ? this.state.user : null;
     return (

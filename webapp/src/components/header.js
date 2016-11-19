@@ -39,7 +39,7 @@ class Header extends Component {
     if (this.props.game.startedBy !== this.props.user._id) {
       return null;
     }
-    return (<button className="cancel btn" onClick={this.handleCancel}>Cancel Game</button>);
+    return (<button className="cancel btn submit" onClick={this.handleCancel}>Cancel Game</button>);
   }
 
   render() {

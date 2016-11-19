@@ -41,3 +41,12 @@ play.js
 final.js
 - winner
 
+
+TODO
+- handle errors
+- handle game win
+- possible stack overflow on game end/round.previous
+- sign up
+- edit user/password reset
+- email
+- card editor

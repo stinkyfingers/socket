@@ -45,9 +45,8 @@ class Play extends Component {
 	}
 
 	render() {
-		// console.log(this.props, this.state)
 		return (
-			<div className="play">Play: 
+			<div className="play">
 			{this.props && this.props.game ? this.renderGame() : null}
 			</div>
 		);

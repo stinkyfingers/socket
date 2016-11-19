@@ -35,7 +35,7 @@ class InitializeGame extends Component {
 		return (
 			<div className="startGame">
 				<h3>Have all your players joined? Then, it may be time to...</h3>
-				<button className="initGame" onClick={this.handleInitGame}>Start Game</button>
+				<button className="btn initGame createBtn" onClick={this.handleInitGame}>Start Game</button>
 			</div>
 		);
 	}

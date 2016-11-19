@@ -4,46 +4,28 @@ import GameActions from '../actions/game';
 import DealerCards from './dealerCards';
 import Cards from './cards';
 import FinalScore from './finalScore';
+import classNames from 'classnames';
 
 
 class Round extends Component {
 	constructor() {
 		super();
-		// this.onStatusChange = this.onStatusChange.bind(this);
 		this.handleClick = this.handleClick.bind(this);
 	}
 
-	// onStatusChange(status) {
-	// 	console.log(status)
-	// 	if (status.game) {
-	// 		console.log(status)
-	// 		this.setState({ game: status.game });
-	// 	}
-	// 	if (status.error) {
-	// 		console.log(status.error)
-	// 		// this.setState({ error: status.error });
-	// 	}
-	// }
-
-	componentWillMount() {
-	}
-
-	componentDidMount() {
-		// GameStore.listen(this.onStatusChange);
-	}
 
 	handleClick(e) {
-		// const card = e.target.dataset.value;
 		const play = {
 			playType: 'vote',
 			card: e,
 			player: this.props.user
 		}
 		GameActions.play(this.props.game._id, this.props.user, play);
+		this.active = e.phrase
 	}
 
+
 	renderVotes() {
-		console.log(this.props.game)
 		let cards = [];
 		for (const i in this.props.game.round.options) {
 			if (!this.props.game.round.options) {
@@ -55,14 +37,14 @@ class Round extends Component {
 				yours = <span className="youPlayed">(You played this, genius)</span>;
 			}
 
-			cards.push(<div key={'choice' + i} className="optionCard card" onClick={() => this.handleClick(this.props.game.round.options[i].card)} data-value={this.props.game.round.options[i].card}>
+			cards.push(<div key={'choice' + i} className={classNames('optionCard','card', this.props.game.round.options[i].card.phrase === this.active ? 'active' : null)} onClick={() => this.handleClick(this.props.game.round.options[i].card)} data-value={this.props.game.round.options[i].card}>
 				{this.props.game.round.options[i].card.phrase} {yours}
 			</div>);
 		}
 		return (
-			<div className="options">
+			<div className="optionsContainer">
 				<DealerCards dealerCards={this.props.game.round.dealerCards} />
-				<h3>Options</h3>
+				<h3>Options (Click to vote on your favorite)</h3>
 				{cards}
 			</div>
 		);
@@ -86,7 +68,6 @@ class Round extends Component {
 	}
 
 	renderCards() {
-		console.log(this.props.game.round.dealerCards)
 		let cards = [];
 		for (const i in this.props.game.players) {
 			if (!this.props.game.players[i]) {
@@ -107,30 +88,50 @@ class Round extends Component {
 	}
 
 	renderPreviousResults() {
+		if (!this.props.game.round.mostRecentResults || !this.props.game.round.mostRecentResults.dealerCards || this.props.game.round.mostRecentResults.dealerCards.length === 0) {
+			return null
+		}
 		const p = this.props.game.round.mostRecentResults;
-		var votes = [];
+		const votes = {};
+		let tally = {};
 		for (let id in p.votes) {
 			if (!p.votes[id]) {
 				continue;
 			}
-				votes.push(<span className="vote" key={'votes'+id}><DealerCards dealerCards={p.dealerCards} /><div className="card">{p.votes[id].card.phrase}</div>Played by {p.votes[id].card.player.name}</span>);
+			if (!tally.id) {
+				tally.id = 1;
+			} else {
+				tally.id++;
+			}
+			votes.id = (<div className="previousResult" key={'votes' + id}>
+					The difference between<span className="previousCard">{p.dealerCards[0].phrase}</span>
+					 and<span className="previousCard">{p.dealerCards[1].phrase}</span> is 
+				<span className="previousCard">{p.votes[id].card.phrase}.</span>
+				(Played by {p.votes[id].card.player.name}). <span className="total">Total: {tally.id}</span></div>);
 		}
 
+		const out = [];
+		for (let o in votes) {
+			if (!votes[o]) {
+				continue;
+			}
+			out.push(votes[o]);
+		}
 
-		return (
+		return (	
 			<div className="previous">
-				<h3>Last Round</h3>
-				{votes}
+				<h3>Previous Round Results</h3>
+				{out}
 			</div>
 		);
 	}
 
 	render() {
 		return (
-			<div className="play">Round: 
+			<div className="play">
 				{this.props && this.props.game && this.props.game.round && !this.props.game.finalScore ? this.renderRound() : null}
 				{this.props && this.props.game && this.props.game.finalScore ? <FinalScore game={this.props.game} user={this.props.user} /> : null}
-				<hr />
+				<div className="playerCardsDivider"></div>
 				{this.props && this.props.game && this.props.game.round && this.props.game.round.mostRecentResults ? this.renderPreviousResults() : null}
 			</div>
 		);

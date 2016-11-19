@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import GameActions from '../actions/game';
 import GameStore from '../stores/game';
 import InitializeGame from '../components/initializeGame';
+import '../css/createGame.css';
 
 class CreateGame extends Component {
 	constructor() {
@@ -56,7 +57,7 @@ class CreateGame extends Component {
 			<div className="players">
 				<h3>Players for game <span className="id">{this.state.game._id}:</span></h3>
 				{players}
-				<button className="button" onClick={this.handleRefresh}>Refresh Player List</button>
+				<button className="btn refresh createBtn" onClick={this.handleRefresh}>Refresh Player List</button>
 			</div>
 		);
 	}
@@ -73,7 +74,7 @@ class CreateGame extends Component {
 		console.log(this.state)
 		return (
 			<div className="createGame">
-				{this.state && this.state.game ? null : <button onClick={this.handleNewGame}>Create New Game</button>}
+				{this.state && this.state.game ? null : <button className="btn createBtn" onClick={this.handleNewGame}>Create New Game</button>}
 				{this.state && this.state.game ? this.handlePlayerList() : null}
 				{this.state && this.state.game && !this.state.game.initialized ? this.handleInitGameButton() : null}
 			</div>

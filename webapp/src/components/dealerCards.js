@@ -1,39 +1,16 @@
 import React, { Component } from 'react';
-// import GameActions from '../actions/game';
-// import GameStore from '../stores/game';
 import '../css/card.css';
+import '../css/round.css';
 
 class DealerCards extends Component {
-	// constructor() {
-	// 	super();
-	// 	// this.onStatusChange = this.onStatusChange.bind(this);
-	// }
-
-	// onStatusChange(status) {
-	// 	if (status.game) {
-	// 		this.setState({ game: status.game });
-	// 	}
-	// 	if (status.error) {
-	// 		console.log(status.error)
-	// 		this.setState({ error: status.error });
-	// 	}
-	// }
-
-	componentWillMount() {
-		// this.setState({ cards: this.props.dealerCards });
-	}
-
-	componentDidMount() {
-		// GameStore.listen(this.onStatusChange);
-	}
-
+	
 	renderCards() {
 		if (this.props.dealerCards.length !== 2) {
 			console.log('not enough dealer cards');
 			this.setState({ error: 'not enough dealer cards' });
 		}
 		const cards = (
-			<div className="dealerCards">
+			<div className="dealerCardsContainer">
 				<span>The difference between</span>
 				<div className="dealerCard card">{this.props.dealerCards[0].phrase}</div>
 				<span>and</span>
@@ -46,7 +23,7 @@ class DealerCards extends Component {
 
 	render() {
 		return (
-			<div className="play">Dealer Cards: 
+			<div className="dealerCardsElement">
 				{this.props && this.props.dealerCards ? this.renderCards() : null}
 			</div>
 		);

@@ -36,7 +36,7 @@ class Cards extends Component {
 			}
 		}
 		return (
-			<div className="playerCards">
+			<div className="playerCardsContainer">
 				{cards}
 			</div>
 		);
@@ -55,7 +55,9 @@ class Cards extends Component {
 
 	render() {
 		return (
-			<div className="play">Player Cards: 
+			<div className="cardsElement">
+				<div className="playerCardsDivider"></div> 
+				<h3>Click to play</h3>
 				{this.props && this.props.cards ? this.renderCards() : null}
 				{this.renderPlayedCard()}
 			</div>

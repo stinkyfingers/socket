@@ -32,6 +32,8 @@
 
 .login {
 	margin: .5em 0 0 0;
+	display: inline;
+	padding: 0 .5em;
 }
 
 .login label input {
