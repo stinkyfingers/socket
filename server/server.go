@@ -24,6 +24,7 @@ func main() {
 	http.Handle("/game/new", Cors(http.HandlerFunc(handlers.HandleNewGame)))
 	http.Handle("/game/add", Cors(http.HandlerFunc(handlers.HandleAddPlayer)))
 	http.Handle("/game/init", Cors(http.HandlerFunc(handlers.HandleStartGame)))
+	http.Handle("/game/exit", Cors(http.HandlerFunc(handlers.HandleExitGame)))
 	http.Handle("/game", Cors(http.HandlerFunc(handlers.HandleGetGame)))
 
 	http.HandleFunc("/test", handlers.HandleTestSetup)

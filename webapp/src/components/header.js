@@ -32,7 +32,8 @@ class Header extends Component {
 
 
   handleCancel() {
-    GameActions.unsetGame();
+    GameActions.exitGame(this.props.game);
+    window.location.href = '/';
   }
 
   renderCancelGame() {

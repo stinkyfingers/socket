@@ -186,3 +186,26 @@ func HandleGetGame(w http.ResponseWriter, r *http.Request) {
 	}
 	sendJson(w, g)
 }
+
+func HandleExitGame(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	if !bson.IsObjectIdHex(id) {
+		HttpError{nil, "error parsing game id", 500, w}.HandleErr()
+		return
+	}
+	g := game.Game{
+		ID: bson.ObjectIdHex(id),
+	}
+	err := g.Get()
+	if err != nil {
+		HttpError{err, "error retrieving game", 500, w}.HandleErr()
+		return
+	}
+	g.Initialized = false
+	err = g.Update()
+	if err != nil {
+		HttpError{err, "error updating game", 500, w}.HandleErr()
+		return
+	}
+	sendJson(w, g)
+}

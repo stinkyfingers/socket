@@ -90,6 +90,7 @@ class FindGame extends Component {
 				<button className="btn findGame" onClick={this.handleClick}>Search</button>
 				{this.state && this.state.game && this.state.game.initialized === false ? this.renderPlayGame() : null}
 				{this.state && this.state.game && this.state.game.initialized && !this.playerJoined === true ? <div className="started">Game has already started</div> : null}
+				{this.state && this.state.game && this.state.game.initialized && this.playerJoined === true ? this.renderPlayGame() : null}
 			</div>
 		);
 	}

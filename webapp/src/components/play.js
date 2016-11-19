@@ -3,6 +3,8 @@ import GameActions from '../actions/game';
 import GameStore from '../stores/game';
 import Initialize from './initializeGame';
 import Round from './round';
+import FinalScore from './finalScore';
+
 
 class Play extends Component {
 	constructor() {
@@ -45,9 +47,11 @@ class Play extends Component {
 	}
 
 	render() {
+		console.log(this.props);
 		return (
 			<div className="play">
-			{this.props && this.props.game ? this.renderGame() : null}
+				{this.props && this.props.game && this.props.game.finalScore ? <FinalScore game={this.props.game} user={this.props.user} /> : null}
+				{this.props && this.props.game && !this.props.game.finalScore ? this.renderGame() : null}
 			</div>
 		);
 	}

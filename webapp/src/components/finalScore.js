@@ -30,7 +30,8 @@ class FinalScore extends Component {
 
 	render() {
 		return (
-			<div className="play">Final Score: 
+			<div className="play">
+				<h3>Final Score: </h3>
 				{this.renderFinalScore()}
 			</div>
 		);

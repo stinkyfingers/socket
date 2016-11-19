@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import GameActions from '../actions/game';
-// import GameStore from '../stores/game';
 import DealerCards from './dealerCards';
 import Cards from './cards';
-import FinalScore from './finalScore';
 import classNames from 'classnames';
 
 
@@ -98,16 +96,17 @@ class Round extends Component {
 			if (!p.votes[id]) {
 				continue;
 			}
-			if (!tally.id) {
-				tally.id = 1;
+			const key = p.votes[id].card.phrase;
+			if (!tally[key]) {
+				tally[key] = 1;
 			} else {
-				tally.id++;
+				tally[key]++;
 			}
-			votes.id = (<div className="previousResult" key={'votes' + id}>
+			votes[key] = (<div className="previousResult" key={'votes' + id}>
 					The difference between<span className="previousCard">{p.dealerCards[0].phrase}</span>
 					 and<span className="previousCard">{p.dealerCards[1].phrase}</span> is 
 				<span className="previousCard">{p.votes[id].card.phrase}.</span>
-				(Played by {p.votes[id].card.player.name}). <span className="total">Total: {tally.id}</span></div>);
+				(Played by {p.votes[id].card.player.name}). <span className="total">Total: {tally[key]}</span></div>);
 		}
 
 		const out = [];
@@ -120,7 +119,7 @@ class Round extends Component {
 
 		return (	
 			<div className="previous">
-				<h3>Previous Round Results</h3>
+				<h3>Previous round results...</h3>
 				{out}
 			</div>
 		);
@@ -130,7 +129,6 @@ class Round extends Component {
 		return (
 			<div className="play">
 				{this.props && this.props.game && this.props.game.round && !this.props.game.finalScore ? this.renderRound() : null}
-				{this.props && this.props.game && this.props.game.finalScore ? <FinalScore game={this.props.game} user={this.props.user} /> : null}
 				<div className="playerCardsDivider"></div>
 				{this.props && this.props.game && this.props.game.round && this.props.game.round.mostRecentResults ? this.renderPreviousResults() : null}
 			</div>

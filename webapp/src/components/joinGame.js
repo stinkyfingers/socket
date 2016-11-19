@@ -24,7 +24,6 @@ class JoinGame extends Component {
 	}
 
 	handleClick() {
-		console.log('click', this.props.game)
 		if (this.props.game.intialized) {
 			console.log("Already started")
 			// TODO - handle error

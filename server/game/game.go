@@ -2,7 +2,6 @@ package game
 
 import (
 	"errors"
-	// "log"
 	"math/rand"
 
 	"github.com/stinkyfingers/socket/server/db"
@@ -18,15 +17,16 @@ type Game struct {
 	Deck        []Card            `bson:"deck" json:"deck"`
 	FinalScore  map[string][]Play `bson:"finalScore,omitempty" json:"finalScore,omitempty"` // PlayerIDHex to []Vote
 	StartedBy   string            `bson:"startedBy" json:"startedBy"`
+	Rounds      []Round           `bson:"rounds" json:"rounds"`
 }
 
 type Round struct {
-	DealerCards       []DealerCard      `bson:"dealerCards" json:"dealerCards"`
-	Plays             map[string]Play   `bson:"plays,omitempty" json:"plays,omitempty"`
-	Votes             map[string]Play   `bson:"votes,omitempty" json:"votes,omitempty"`
-	Options           []Play            `bson:"options,omitempty" json:"options,omitempty"`
-	Score             map[string][]Play `bson:"score,omitempty" json:"score,omitempty"` //TODO is map[string]Play ok?
-	Previous          *Round            `bson:"previous" json:"-"`
+	DealerCards []DealerCard      `bson:"dealerCards" json:"dealerCards"`
+	Plays       map[string]Play   `bson:"plays,omitempty" json:"plays,omitempty"`
+	Votes       map[string]Play   `bson:"votes,omitempty" json:"votes,omitempty"`
+	Options     []Play            `bson:"options,omitempty" json:"options,omitempty"`
+	Score       map[string][]Play `bson:"score,omitempty" json:"score,omitempty"` //TODO is map[string]Play ok?
+	// Previous          *Round            `bson:"previous" json:"-"`
 	MostRecentResults MostRecentResults `bson:"mostRecentResults" json:"mostRecentResults"` // last round's results
 }
 type MostRecentResults struct {
@@ -60,6 +60,9 @@ func (g *Game) Get() error {
 	g.Round.Plays = make(map[string]Play)
 	g.Round.Votes = make(map[string]Play)
 	g.Round.Score = make(map[string][]Play)
+	if len(g.Rounds) == roundsInGame {
+		return g.TallyScore()
+	}
 	return err
 }
 
@@ -153,10 +156,10 @@ func (g *Game) Initialize() error {
 	}
 	r := Round{
 		DealerCards: cards,
-		Previous:    nil,
-		Plays:       make(map[string]Play),
-		Votes:       make(map[string]Play),
-		Score:       make(map[string][]Play),
+		// Previous:    nil,
+		Plays: make(map[string]Play),
+		Votes: make(map[string]Play),
+		Score: make(map[string][]Play),
 	}
 	g.Round = r
 
@@ -237,31 +240,32 @@ func (g *Game) UpdateVotes() error {
 		g.Round.Score[play.Card.Player.ID.Hex()] = append(g.Round.Score[play.Card.Player.ID.Hex()], play)
 	}
 
-	// Check for game end
-	rounds := g.GetRounds()
-	if len(rounds) == roundsInGame {
-		return g.TallyScore(rounds)
-	}
-
 	// Next Round
 	newDealerCards, err := g.DrawCards()
 	if err != nil {
 		return err
 	}
 
-	lastRound := g.Round
+	// lastRound := g.Round
+	g.Rounds = append(g.Rounds, g.Round)
 	r := Round{
 		DealerCards: newDealerCards,
-		Previous:    &lastRound,
-		Plays:       make(map[string]Play),
-		Votes:       make(map[string]Play),
-		Score:       make(map[string][]Play),
+		// Previous:    &lastRound,
+		Plays: make(map[string]Play),
+		Votes: make(map[string]Play),
+		Score: make(map[string][]Play),
 		MostRecentResults: MostRecentResults{
 			Votes:       g.Round.Votes,
 			DealerCards: g.Round.DealerCards,
 		},
 	}
 	g.Round = r
+
+	// Check for game end
+	if len(g.Rounds) == roundsInGame {
+		return g.TallyScore()
+	}
+
 	err = g.Deal()
 	if err != nil {
 		return err
@@ -270,41 +274,16 @@ func (g *Game) UpdateVotes() error {
 	return g.Update()
 }
 
-// GetRounds traverses a game's rounds into an array and returns it
-func (g *Game) GetRounds() []Round {
-	var rounds []Round
-	currentRound := g.Round
-	for {
-		rounds = append(rounds, currentRound)
-		if currentRound.Previous == nil {
-			break
-		}
-		prev := currentRound.Previous
-		currentRound = *prev
-	}
-	return rounds
-}
-
 // TallyScore traverses a game's rounds, appending the scores to a [playerID][]Vote map
-func (g *Game) TallyScore(rounds []Round) error {
+func (g *Game) TallyScore() error {
 	g.FinalScore = make(map[string][]Play)
-	for _, round := range rounds {
+	for _, round := range g.Rounds {
 		for playerID, score := range round.Score {
 			g.FinalScore[playerID] = append(g.FinalScore[playerID], score...)
 		}
 	}
 
-	r := Round{
-		Previous: &g.Round,
-		Plays:    make(map[string]Play),
-		Votes:    make(map[string]Play),
-		Score:    make(map[string][]Play),
-		MostRecentResults: MostRecentResults{
-			Votes:       g.Round.Votes,
-			DealerCards: g.Round.DealerCards,
-		},
-	}
-	g.Round = r
+	g.Round = Round{}
 
 	err := g.Update()
 	return err

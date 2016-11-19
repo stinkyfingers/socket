@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import GameActions from '../actions/game';
 import '../css/card.css';
+import classNames from 'classnames';
+
 
 class Cards extends Component {
 	constructor() {
@@ -29,26 +31,11 @@ class Cards extends Component {
 			if (!this.props.cards[i]) {
 				continue;
 			}
-			if (this.playedCard && this.playedCard.phrase === this.props.cards[i].phrase){
-				this.props.cards.splice(i);
-			} else{
-				cards.push(<div key={'card' + i} className="playerCard card" onClick={() => {this.handleClick(this.props.cards[i])}}>{this.props.cards[i].phrase}</div>)
-			}
+			cards.push(<div key={'card' + i} className={classNames('playerCard', 'card', this.playedCard && this.playedCard.phrase === this.props.cards[i].phrase ? 'active' : null)} onClick={() => {this.handleClick(this.props.cards[i])}}>{this.props.cards[i].phrase}</div>)
 		}
 		return (
 			<div className="playerCardsContainer">
 				{cards}
-			</div>
-		);
-	}
-
-	renderPlayedCard(){
-		if (!this.playedCard) {
-			return null;
-		}
-		return (
-			<div className="playedCard card">
-				{this.playedCard.phrase}
 			</div>
 		);
 	}
@@ -59,7 +46,7 @@ class Cards extends Component {
 				<div className="playerCardsDivider"></div> 
 				<h3>Click to play</h3>
 				{this.props && this.props.cards ? this.renderCards() : null}
-				{this.renderPlayedCard()}
+
 			</div>
 		);
 	}
