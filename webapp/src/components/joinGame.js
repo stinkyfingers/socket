@@ -37,8 +37,9 @@ class JoinGame extends Component {
 
 	render() {
 		return (
-			<div className="joinGame">Join Game {this.props.game._id}
-				<button onClick={this.handleClick}>Join</button>
+			<div className="joinGame">
+				<h3>Game {this.props.game._id} found!</h3>
+				<button className="joinGame btn" onClick={this.handleClick}>Join Game</button>
 			</div>
 		);
 	}

@@ -28,3 +28,22 @@
 .navList > li > a:hover {
   color: #aaa;
 }
+
+.main {
+  margin: 1em 0;
+}
+
+.btn {
+  border: none;
+  border-radius: 3px;
+  padding: .3em;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+
+input {
+  border-radius: 3px;
+  border: 1px solid #333;
+  padding: .2em;
+  font-size: 1.2em;
+}

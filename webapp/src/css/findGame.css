@@ -1,0 +1,12 @@
+button.findGame {
+	color: #eee;
+	background-color: #333;
+}
+button.findGame:hover {
+	color: #333;
+	background-color: #eee;
+}
+
+.findGame label input {
+	margin: 0 1em;
+}

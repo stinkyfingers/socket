@@ -1,25 +1,21 @@
 import React, { Component } from 'react';
 import './App.css';
-import Login from './components/login';
-import Logout from './components/logout';
 import UserStore from './stores/user';
 import GameStore from './stores/game';
 import UserActions from'./actions/user';
-// import GameActions from './actions/game';
 import Play from './components/play';
 import Decks from './components/decks';
 import Edit from './components/edit';
 import CreateGame from './components/createGame';
-import AddPlayer from './components/addPlayer';
 import InitializeGame from './components/initializeGame';
 import FindGame from './components/findGame';
+import Header from './components/header';
 
 class App extends Component {
   constructor() {
     super()
     this.onStatusChange = this.onStatusChange.bind(this);
     this.gameStatusChange = this.gameStatusChange.bind(this);
-
   }
 
   onStatusChange(status) {
@@ -45,10 +41,6 @@ class App extends Component {
 
   componentWillMount() {
     UserActions.getUser();
-    // const u = location.href;
-    // const index = u.lastIndexOf("/") + 1;
-    // const id = u.substr(index);
-    // GameActions.connect(id);
   }
 
   componentDidMount() {
@@ -60,14 +52,6 @@ class App extends Component {
   componentWillUnmount() {
     this.unmountgame();
     this._isMounted = false;
-  }
-
-  userDisplay() {
-    return(
-      <div>
-        User: {this.state.user.name}
-      </div>
-    );
   }
 
   renderNav() {
@@ -98,9 +82,6 @@ class App extends Component {
         case (path.match(/\/create\/?.*/) || {}).input:
           Child = <CreateGame user={this.state && this.state.user ? this.state.user : null} />
           break;
-        case '/addPlayer':
-          Child = <AddPlayer />
-          break;
         case '/init':
           Child = <InitializeGame />
           break;
@@ -111,20 +92,16 @@ class App extends Component {
   }
 
   render() {
+    console.log(this.state)
+    const game = this.state && this.state.game ? this.state.game : null;
+    const user = this.state && this.state.user ? this.state.user : null;
     return (
       <div className="App">
-        <div className="App-header">
-          <h2>Welcome to React</h2>
-          {this.renderNav()}
-          {this.state && this.state.user ? this.userDisplay() : null }
-          {this.state && this.state.user ? null : <Login />}
-          {this.state && this.state.user ? <Logout /> : null}
-        </div>
+        <Header game={game} user={user} />
 
-       
-
+        <div className="main">
         {this.getRoute()}
-
+        </div>
       </div>
     );
   }

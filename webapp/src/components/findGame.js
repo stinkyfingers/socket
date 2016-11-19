@@ -3,6 +3,7 @@ import GameActions from '../actions/game';
 import GameStore from '../stores/game';
 import UserStore from '../stores/user';
 import JoinGame from './joinGame';
+import '../css/findGame.css'
 
 class FindGame extends Component {
 	constructor() {
@@ -66,7 +67,9 @@ class FindGame extends Component {
 		}
 		return (
 			<div>
-				<a href={'/play/' + this.state.game._id} >Play</a>
+				<h3>You're enrolled in game {this.state.game._id}. Click 
+				<span> <a href={'/play/' + this.state.game._id} >here</a> </span>
+				to begin.</h3>
 			</div>
 		);
 	}
@@ -79,13 +82,12 @@ class FindGame extends Component {
 				}
 			}
 		}
-		console.log(this)
 		return (
-			<div className="findGame">Find Game
+			<div className="findGame">Find Game:
 				<label htmlFor="id">
-					<input name="id" onChange={this.handleChange} />
+					<input name="id" placeholder="Enter ID number..." onChange={this.handleChange} />
 				</label>
-				<button onClick={this.handleClick}>Search</button>
+				<button className="btn findGame" onClick={this.handleClick}>Search</button>
 				{this.state && this.state.game && this.state.game.initialized === false ? this.renderPlayGame() : null}
 				{this.state && this.state.game && this.state.game.initialized && !this.playerJoined === true ? <div className="started">Game has already started</div> : null}
 			</div>

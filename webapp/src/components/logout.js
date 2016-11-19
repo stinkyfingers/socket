@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import UserActions from '../actions/user';
 import UserStore from '../stores/user';
+import '../css/header.css'
+import '../App.css'
 
 class Logout extends Component {
 	constructor() {
@@ -29,7 +31,7 @@ class Logout extends Component {
 	render() {
 		return (
 			<div className="login">
-				<button className="button submit" onClick={this.handleLogout}>Logout</button>
+				<button className="btn submit" onClick={this.handleLogout}>Logout</button>
 			</div>
 		);
 	}

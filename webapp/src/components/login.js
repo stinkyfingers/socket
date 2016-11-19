@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import UserActions from '../actions/user';
 import UserStore from '../stores/user';
+import '../css/header.css'
+import '../App.css'
 
 class Login extends Component {
 	constructor() {
@@ -40,7 +42,7 @@ class Login extends Component {
 			return null;
 		}
 		return (
-			<button className="button submit" onClick={this.handleLogin}>Login</button>
+			<button className="btn submit" onClick={this.handleLogin}>Login</button>
 		);
 	}
 

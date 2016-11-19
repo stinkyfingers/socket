@@ -1,0 +1,48 @@
+.App-header h1{
+	margin: 0;
+}
+
+.navList {
+	margin: auto;
+	padding: 0;
+}
+
+.navList li {
+	background-color: #333;
+	padding: .5em;
+	margin: 0 .5em;
+}
+
+.navList li:hover {
+	background-color: #eee;
+	color: #333;
+	border-radius: 3px;
+}
+
+.navList li a:hover {
+	color: #333;
+}
+
+.userDisplay {
+	margin: .5em 0 0 0;
+	background-color: #eee;
+	color: #333;
+	padding: .2em 0;
+}
+
+.login {
+	margin: .5em 0 0 0;
+}
+
+.login label input {
+	margin: 0 1em;
+}
+
+.submit {
+	background-color: #eee;
+	color: #333;
+}
+.submit:hover {
+	background-color: #333;
+	color: #eee;
+}

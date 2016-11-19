@@ -9,7 +9,6 @@ class CreateGame extends Component {
 		this.handleNewGame = this.handleNewGame.bind(this);
 		this.onStatusChange = this.onStatusChange.bind(this);
 		this.handleRefresh = this.handleRefresh.bind(this);
-		this.handleCancel = this.handleCancel.bind(this);
 	}
 
 	onStatusChange(status) {
@@ -70,10 +69,6 @@ class CreateGame extends Component {
 		return (<div className="waitTostart">Waiting to start...</div>);
 	}
 
-	handleCancel() {
-		GameActions.unsetGame();
-	}
-
 	render() {
 		console.log(this.state)
 		return (
@@ -81,7 +76,6 @@ class CreateGame extends Component {
 				{this.state && this.state.game ? null : <button onClick={this.handleNewGame}>Create New Game</button>}
 				{this.state && this.state.game ? this.handlePlayerList() : null}
 				{this.state && this.state.game && !this.state.game.initialized ? this.handleInitGameButton() : null}
-				{this.state && this.state.game ? <button className="cancel btn" onClick={this.handleCancel}>Cancel Game</button> : null}
 			</div>
 		);
 	}
