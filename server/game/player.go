@@ -2,9 +2,11 @@ package game
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 
 	"github.com/stinkyfingers/socket/server/db"
+	"github.com/stinkyfingers/socket/server/email"
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -53,7 +55,18 @@ func (p *Player) Update() error {
 	if err != nil {
 		return err
 	}
-	return db.Session.DB(db.DB).C(playerCollection).UpdateId(p.ID, p)
+	update := make(map[string]interface{})
+	if p.Password != "" {
+		update["encryptedPassword"] = p.EncryptedPassword
+	}
+	if p.Email != "" {
+		update["email"] = p.Email
+	}
+	if p.Name != "" {
+		update["name"] = p.Name
+	}
+
+	return db.Session.DB(db.DB).C(playerCollection).UpdateId(p.ID, bson.M{"$set": update})
 }
 
 func (p *Player) Delete() error {
@@ -93,4 +106,17 @@ func (p *Player) ResetPassword() error {
 	}
 	p.Password = string(b)
 	return p.Update()
+}
+
+func (p *Player) PasswordEmail() error {
+	msg := []byte(fmt.Sprintf("%s, your password has been reset to: %s. It is advisable that you log in using this password, then change it.", p.Name, p.Password))
+	err := email.Send([]string{p.Email}, msg)
+	return err
+}
+
+func (p *Player) FindByEmail() error {
+	query := bson.M{
+		"email": p.Email,
+	}
+	return db.Session.DB(db.DB).C(playerCollection).Find(query).One(&p)
 }

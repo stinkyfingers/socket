@@ -2,18 +2,40 @@ import React, { Component } from 'react';
 import Login from './login';
 import Logout from './logout';
 import GameActions from '../actions/game';
+import UserActions from '../actions/user';
+import UserStore from '../stores/user';
 import '../css/header.css';
 
 class Header extends Component {
   constructor() {
     super()
     this.handleCancel = this.handleCancel.bind(this);
+    this.statusUpdate = this.statusUpdate.bind(this);
   }
+
+  statusUpdate(status) {
+    if (status.user) {
+      this.setState({ user: status.user });
+    }
+  }
+
+  componentWillMount() {
+    UserActions.getUser();
+  }
+
+  componentDidMount() {
+    this.unlisten = UserStore.listen(this.statusUpdate);
+  }
+
+  componentWillUnmount() {
+    this.unlisten();
+  }
+
 
   userDisplay() {
     return(
       <div className="userDisplay">
-        Player: {this.props.user.name}
+        Player: {this.state.user.name}
       </div>
     );
   }
@@ -37,7 +59,7 @@ class Header extends Component {
   }
 
   renderCancelGame() {
-    if (this.props.game.startedBy !== this.props.user._id) {
+    if (this.props.game.startedBy !== this.state.user._id) {
       return null;
     }
     return (<button className="cancel btn submit" onClick={this.handleCancel}>Cancel Game</button>);
@@ -49,10 +71,10 @@ class Header extends Component {
         <div className="App-header">
           <h1>The Difference Between</h1>
           {this.renderNav()}
-          {this.props && this.props.user ? this.userDisplay() : null }
-          {this.props && this.props.user ? null : <Login className="login"  />}
-          {this.props && this.props.user ? <Logout className="login" /> : null}
-          {this.props && this.props.game ? this.renderCancelGame() : null}
+          {this.state && this.state.user ? this.userDisplay() : null }
+          {this.state && this.state.user ? null : <Login className="login"  />}
+          {this.state && this.state.user ? <Logout className="login" /> : null}
+          {this.state && this.state.game ? this.renderCancelGame() : null}
         </div>
       </div>
     );

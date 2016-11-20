@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import GameActions from '../actions/game';
 import GameStore from '../stores/game';
+import UserActions from '../actions/user';
+import UserStore from '../stores/user';
 import InitializeGame from '../components/initializeGame';
 import '../css/createGame.css';
 
@@ -19,6 +21,9 @@ class CreateGame extends Component {
 		if (status.error) {
 			console.log(status.error);
 		}
+		if (status.user) {
+			this.setState({ user: status.user });
+		}
 	}
 	componentWillMount() {
 		GameActions.getGameFromStorage();
@@ -30,14 +35,21 @@ class CreateGame extends Component {
     	if (id && id !== 'create' && this.state && id !== this.state.game._id) {
     		GameActions.getGame(id);
     	}
+		UserActions.getUser();
+
 	}
 
 	componentDidMount() {
     	GameStore.listen(this.onStatusChange);
+		this.unlisten = UserStore.listen(this.onStatusChange);
+	}
+
+	componentWillUnmount() {
+		this.unlisten();
 	}
 
 	handleNewGame(){
-		GameActions.createGame(this.props.user);
+		GameActions.createGame(this.state.user);
 	}
 
 	handleRefresh() {
@@ -63,9 +75,8 @@ class CreateGame extends Component {
 	}
 
 	handleInitGameButton() {
-		console.log(this.props)
-		if (this.props.user._id === this.state.game.startedBy) {
-			return (<InitializeGame game={this.state.game} user={this.props.user}/>);
+		if (this.state.user._id === this.state.game.startedBy) {
+			return (<InitializeGame game={this.state.game} user={this.state.user}/>);
 		}
 		return (<div className="waitTostart">Waiting to start...</div>);
 	}

@@ -8,7 +8,27 @@ var UserStore = Reflux.createStore({
 	authenticate: function(user) {
 		// use john test
 		let code = 0;
-		const url = config.api + '/auth'
+		const url = config.api + '/auth';
+		fetch(url, {
+			method: 'POST',
+			body: JSON.stringify(user)
+		}).then((resp) => {
+			code = resp.status;
+			return resp.json();
+		}).then((resp) => {
+			if (code !== 200) {
+				this.trigger({ error: resp });
+				return
+			}
+			this.storeUser(resp)
+			this.trigger({ user: resp });
+		});
+	},
+
+	saveUser: function(user) {
+		let code = 0;
+		const path = user._id ? 'update' : 'create';
+		const url = config.api + '/player/' + path;
 		fetch(url, {
 			method: 'POST',
 			body: JSON.stringify(user)
@@ -31,7 +51,7 @@ var UserStore = Reflux.createStore({
 
 	getUser: function() {
 		const user = sessionStorage.getItem('user');
-		this.trigger({ user:JSON.parse(user) });
+		this.trigger({ user: JSON.parse(user) });
 	},
 
 	unsetUser: function() {

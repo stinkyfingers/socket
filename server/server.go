@@ -27,6 +27,11 @@ func main() {
 	http.Handle("/game/exit", Cors(http.HandlerFunc(handlers.HandleExitGame)))
 	http.Handle("/game", Cors(http.HandlerFunc(handlers.HandleGetGame)))
 
+	http.Handle("/player/reset", Cors(http.HandlerFunc(handlers.HandleResetPassword)))
+	http.Handle("/player/update", Cors(http.HandlerFunc(handlers.HandleUpdatePlayer)))
+	http.Handle("/player/create", Cors(http.HandlerFunc(handlers.HandleCreatePlayer)))
+	http.Handle("/player", Cors(http.HandlerFunc(handlers.HandleGetPlayer)))
+
 	http.HandleFunc("/test", handlers.HandleTestSetup)
 	http.Handle("/auth", Cors(http.HandlerFunc(handlers.HandleAuthenticate)))
 	log.Fatal(http.ListenAndServe(":7000", nil))

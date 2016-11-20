@@ -21,12 +21,11 @@ type Game struct {
 }
 
 type Round struct {
-	DealerCards []DealerCard      `bson:"dealerCards" json:"dealerCards"`
-	Plays       map[string]Play   `bson:"plays,omitempty" json:"plays,omitempty"`
-	Votes       map[string]Play   `bson:"votes,omitempty" json:"votes,omitempty"`
-	Options     []Play            `bson:"options,omitempty" json:"options,omitempty"`
-	Score       map[string][]Play `bson:"score,omitempty" json:"score,omitempty"` //TODO is map[string]Play ok?
-	// Previous          *Round            `bson:"previous" json:"-"`
+	DealerCards       []DealerCard      `bson:"dealerCards" json:"dealerCards"`
+	Plays             map[string]Play   `bson:"plays,omitempty" json:"plays,omitempty"`
+	Votes             map[string]Play   `bson:"votes,omitempty" json:"votes,omitempty"`
+	Options           []Play            `bson:"options,omitempty" json:"options,omitempty"`
+	Score             map[string][]Play `bson:"score,omitempty" json:"score,omitempty"`     //TODO is map[string]Play ok?
 	MostRecentResults MostRecentResults `bson:"mostRecentResults" json:"mostRecentResults"` // last round's results
 }
 type MostRecentResults struct {

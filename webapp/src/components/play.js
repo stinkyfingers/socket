@@ -4,6 +4,8 @@ import GameStore from '../stores/game';
 import Initialize from './initializeGame';
 import Round from './round';
 import FinalScore from './finalScore';
+import UserActions from '../actions/user';
+import UserStore from '../stores/user';
 
 
 class Play extends Component {
@@ -14,12 +16,14 @@ class Play extends Component {
 
 	onStatusChange(status) {
 		if (status.game) {
-			// console.log('updating game', status.game)
 			this.setState({ game: status.game });
 		}
 		if (status.error) {
 			console.log(status.error)
 			// this.setState({ error: status.error });
+		}
+		if (status.user) {
+			this.setState({ user: status.user });
 		}
 	}
 
@@ -28,30 +32,32 @@ class Play extends Component {
     	const index = u.lastIndexOf("/") + 1;
     	const id = u.substr(index);
     	GameActions.connect(id);
+		UserActions.getUser();
 	}
 
 	componentDidMount() {
 		this.unsubscribe = GameStore.listen(this.onStatusChange);
+		this.unlisten = UserStore.listen(this.onStatusChange);
 	}
 
 	componentWillUnmount() {
 		this.unsubscribe();
+		this.unlisten();
 	}
 
 	renderGame() {
-		if (this.props.game.initialized === false) {
-			return (<Initialize game={this.props.game} user={this.props.user}/>);
+		if (this.state.game.initialized === false) {
+			return (<Initialize game={this.state.game} user={this.state.user}/>);
 		}
-		return (<Round game={this.props.game} user={this.props.user} />);
+		return (<Round game={this.state.game} user={this.state.user} />);
 
 	}
 
 	render() {
-		console.log(this.props);
 		return (
 			<div className="play">
-				{this.props && this.props.game && this.props.game.finalScore ? <FinalScore game={this.props.game} user={this.props.user} /> : null}
-				{this.props && this.props.game && !this.props.game.finalScore ? this.renderGame() : null}
+				{this.state && this.state.game && this.state.game.finalScore ? <FinalScore game={this.state.game} user={this.state.user} /> : null}
+				{this.state && this.state.game && !this.state.game.finalScore ? this.renderGame() : null}
 			</div>
 		);
 	}

@@ -106,7 +106,7 @@ var GameStore = Reflux.createStore({
 			const game = JSON.parse(msg.data);
 
 			this.storeGame(game);
-			this.trigger({ gameUpdate: game });
+			this.trigger({ game: game }); // was gameUpdate (app.js)
 		})
 	},
 
