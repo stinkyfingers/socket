@@ -4,7 +4,8 @@ var UserActions = Reflux.createActions([
 	'authenticate',
 	'getUser',
 	'unsetUser',
-	'saveUser'
+	'saveUser',
+	'passwordReset'
 ]);
 
 module.exports = UserActions;

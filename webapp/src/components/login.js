@@ -22,6 +22,9 @@ class Login extends Component {
 	}
 
 	componentDidMount() {
+		if (this.props.user === null) { //TODO /??? 
+			return;
+		}
 		UserStore.listen(this.onStatusChange);
 	}
 

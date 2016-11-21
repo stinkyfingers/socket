@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import Login from './login';
 import Logout from './logout';
+import PasswordReset from './passwordReset';
 import GameActions from '../actions/game';
 import UserActions from '../actions/user';
 import UserStore from '../stores/user';
@@ -16,6 +17,9 @@ class Header extends Component {
   statusUpdate(status) {
     if (status.user) {
       this.setState({ user: status.user });
+    }
+    if (status.error) {
+      // console.log(status.error)
     }
   }
 
@@ -72,7 +76,8 @@ class Header extends Component {
           <h1>The Difference Between</h1>
           {this.renderNav()}
           {this.state && this.state.user ? this.userDisplay() : null }
-          {this.state && this.state.user ? null : <Login className="login"  />}
+          {this.state && this.state.user ? null : <Login className="login" user={null} />}
+          {this.state && this.state.user ? null : <PasswordReset className="reset" />}
           {this.state && this.state.user ? <Logout className="login" /> : null}
           {this.state && this.state.game ? this.renderCancelGame() : null}
         </div>

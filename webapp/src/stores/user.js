@@ -18,9 +18,9 @@ var UserStore = Reflux.createStore({
 		}).then((resp) => {
 			if (code !== 200) {
 				this.trigger({ error: resp });
-				return
+				return;
 			}
-			this.storeUser(resp)
+			this.storeUser(resp);
 			this.trigger({ user: resp });
 		});
 	},
@@ -38,10 +38,27 @@ var UserStore = Reflux.createStore({
 		}).then((resp) => {
 			if (code !== 200) {
 				this.trigger({ error: resp });
-				return
+				return;
 			}
-			this.storeUser(resp)
+			this.storeUser(resp);
 			this.trigger({ user: resp });
+		});
+	},
+
+	passwordReset: function(email) {
+		let code = 0;
+		const url = config.api + '/player/reset?id=' + email;
+		fetch(url, {
+			method: 'GET'
+		}).then((resp) => {
+			code = resp.status;
+			return resp.json();
+		}).then((resp) => {
+			if (code !== 200) {
+				this.trigger({ error: resp });
+				return;
+			}
+			return;
 		});
 	},
 

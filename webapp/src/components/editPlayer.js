@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import UserActions from '../actions/user';
 import UserStore from '../stores/user';
+import '../css/user.css';
 
 class EditPlayer extends Component {
 

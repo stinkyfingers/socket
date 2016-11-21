@@ -5,7 +5,7 @@
 
 .App-header {
   background-color: #222;
-  height: 150px;
+  min-height: 150px;
   padding: 1px;
   color: white;
 }
@@ -48,3 +48,4 @@ input {
   padding: .2em;
   font-size: 1.2em;
 }
+

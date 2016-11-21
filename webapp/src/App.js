@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
 import './App.css';
-// import UserStore from './stores/user';
-// import GameStore from './stores/game';
-// import UserActions from'./actions/user';
 import Play from './components/play';
 import Decks from './components/decks';
 import Edit from './components/edit';
@@ -11,49 +8,9 @@ import InitializeGame from './components/initializeGame';
 import FindGame from './components/findGame';
 import Header from './components/header';
 import EditPlayer from './components/editPlayer';
+import Error from './components/error';
 
 class App extends Component {
-  // constructor() {
-  //   super()
-  //   this.onStatusChange = this.onStatusChange.bind(this);
-  //   this.gameStatusChange = this.gameStatusChange.bind(this);
-  // }
-
-  // onStatusChange(status) {
-  //   // if (status.user) {
-  //   //   this.setState({ user: status.user });
-  //   // }
-  //   // if (status.user === undefined) {
-  //   //   this.setState({ user: undefined });
-  //   // }
-  // }
-
-  // gameStatusChange(status) {
-
-  //   // if (status.game && this._isMounted) {
-  //   //   this.setState({ game: status.game });
-  //   // }
-
-  //   // // From game.play - avoid setState issue
-  //   // if (this._isMounted && status.gameUpdate) {
-  //   //   this.setState({ game: status.gameUpdate });
-  //   // }
-  // }
-
-  // componentWillMount() {
-  //   UserActions.getUser();
-  // }
-
-  // componentDidMount() {
-  //   UserStore.listen(this.onStatusChange);
-  //   this.unmountgame = GameStore.listen(this.gameStatusChange);
-  //   this._isMounted = true;
-  // }
-
-  // componentWillUnmount() {
-  //   this.unmountgame();
-  //   this._isMounted = false;
-  // }
 
   renderNav() {
     return (
@@ -72,7 +29,6 @@ class App extends Component {
     const path = window.location.pathname;
       switch (path) {
         case (path.match(/\/play\/.*/) || {}).input:
-          // Child = <Play user={this.state && this.state.user ? this.state.user : null} game={this.state && this.state.game ? this.state.game : null} />;
           Child = <Play  />;
           break;
         case (path.match(/\/edit\/.*/) || {}).input:
@@ -82,7 +38,6 @@ class App extends Component {
           Child = <Decks />;
           break;
         case (path.match(/\/create\/?.*/) || {}).input:
-          // Child = <CreateGame user={this.state && this.state.user ? this.state.user : null} />;
           Child = <CreateGame />;
           break;
         case '/init':
@@ -98,8 +53,6 @@ class App extends Component {
   }
 
   render() {
-    // const game = this.state && this.state.game ? this.state.game : null;
-    // const user = this.state && this.state.user ? this.state.user : null;
     return (
       <div className="App">
         <Header  />
@@ -107,6 +60,7 @@ class App extends Component {
         <div className="main">
         {this.getRoute()}
         </div>
+        <Error />
       </div>
     );
   }
