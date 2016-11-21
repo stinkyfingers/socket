@@ -82,7 +82,6 @@ class CreateGame extends Component {
 	}
 
 	render() {
-		console.log(this.state)
 		return (
 			<div className="createGame">
 				{this.state && this.state.game ? null : <button className="btn createBtn" onClick={this.handleNewGame}>Create New Game</button>}

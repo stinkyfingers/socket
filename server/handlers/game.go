@@ -50,7 +50,7 @@ func Game(ws *websocket.Conn) {
 	for {
 
 		for i, c := range Clients[id] {
-			log.Print("CLIENT ", c.IP)
+			log.Print("CLIENT ", c.IP, ws)
 			err = websocket.JSON.Send(c.ws, Games[id])
 			if err != nil {
 				log.Print("WS client connection error: ", err)

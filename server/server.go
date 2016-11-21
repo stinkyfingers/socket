@@ -34,6 +34,7 @@ func main() {
 
 	http.HandleFunc("/test", handlers.HandleTestSetup)
 	http.Handle("/auth", Cors(http.HandlerFunc(handlers.HandleAuthenticate)))
+	http.Handle("/status", http.HandlerFunc(handlers.HandleDefault))
 	log.Fatal(http.ListenAndServe(":7000", nil))
 }
 
