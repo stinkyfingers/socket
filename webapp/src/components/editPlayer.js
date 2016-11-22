@@ -16,8 +16,12 @@ class EditPlayer extends Component {
 	statusUpdate(status) {
 		if (status.user) {
 			this.setState({ user: status.user });
+		} 
+		if (status.user === null) {
+			this.setState({ user: {} });
+			return;
 		}
-	}
+}
 
 	componentWillMount() {
 		UserActions.getUser();
@@ -49,13 +53,13 @@ class EditPlayer extends Component {
 		return (
 			<div className="editContainer">
 				<label htmlFor="name">Name: 
-					<input type="text" onChange={this.handleChange} name="name" value={this.state.user.name} />
+					<input type="text" onChange={this.handleChange} name="name" defaultValue={this.state.user.name} />
 				</label>
 				<label htmlFor="email">Email: 
-					<input type="text" onChange={this.handleChange} name="email" value={this.state.user.email} />
+					<input type="text" onChange={this.handleChange} name="email" defaultValue={this.state.user.email} />
 				</label>
-				<label htmlFor="password">Password (leave blank to not change): 
-					<input type="text" onChange={this.handleChange} name="password" value={this.state.user.password} />
+				<label htmlFor="password">Password {this.state && this.state.user && this.state.user._id ? '(leave blank to not change)' : ''}: 
+					<input type="text" onChange={this.handleChange} name="password" defaultValue={this.state.user.password} />
 				</label>
 				<button className="btn submit" onClick={this.handleClick}>Save</button>
 			</div>
@@ -67,7 +71,7 @@ class EditPlayer extends Component {
 	render() {
 		return (
 			<div className="editPlayer">
-				{this.state && this.state.user ? this.renderEdit() : null}
+				{this.state ? this.renderEdit() : null}
 			</div>
 		);
 	}

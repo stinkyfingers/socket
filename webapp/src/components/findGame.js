@@ -3,6 +3,7 @@ import GameActions from '../actions/game';
 import GameStore from '../stores/game';
 import UserStore from '../stores/user';
 import JoinGame from './joinGame';
+import Directions from './directions';
 import '../css/findGame.css'
 
 class FindGame extends Component {
@@ -91,6 +92,7 @@ class FindGame extends Component {
 				{this.state && this.state.game && this.state.game.initialized === false ? this.renderPlayGame() : null}
 				{this.state && this.state.game && this.state.game.initialized && !this.playerJoined === true ? <div className="started">Game has already started</div> : null}
 				{this.state && this.state.game && this.state.game.initialized && this.playerJoined === true ? this.renderPlayGame() : null}
+				<Directions />
 			</div>
 		);
 	}

@@ -10,3 +10,12 @@ button.findGame:hover {
 .findGame label input {
 	margin: 0 1em;
 }
+
+.directions ol {
+	text-align: left;
+}
+
+.directions {
+	max-width: 400px;
+	margin: auto;
+}

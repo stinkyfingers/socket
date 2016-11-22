@@ -50,7 +50,7 @@ class Header extends Component {
         <ul className='navList'>
           <li><a href='/'>Find a Game</a></li>
           <li><a href='/create'>Start a Game</a></li>
-          <li><a href='/decks'>Decks</a></li>
+          <li><a href='/player'>{this.state && this.state.user ? 'Edit User' : 'Create User'} </a></li>
         </ul>
       </div>
     );
