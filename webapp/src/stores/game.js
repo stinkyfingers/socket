@@ -111,7 +111,7 @@ var GameStore = Reflux.createStore({
 	},
 
 	connect: function(id) {
-		const ws = new WebSocket('ws://localhost:7000?id=' + id);
+		const ws = new WebSocket(config.websocket + '?id=' + id);
 		ws.onopen = (() => {
 			this.ws = ws;
 		});

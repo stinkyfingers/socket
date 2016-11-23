@@ -18,15 +18,8 @@ type Client struct {
 var Clients map[string][]Client
 var Games map[string]game.Game
 
-// Server needs to:
-// 1. Send each client Lead Cards and their Player Hand
-// 2. Receive each client's play
-// 3. Send each client Played Cards
-// 4. Receive each client's vote
-
 func Game(ws *websocket.Conn) {
 	id := ws.Request().URL.Query().Get("id")
-	log.Print("ID", id)
 	if id == "" {
 		return
 	}
@@ -35,9 +28,10 @@ func Game(ws *websocket.Conn) {
 	g.ID = bson.ObjectIdHex(id)
 	err := g.Get()
 	if err != nil {
-		log.Print(err)
+		ws.Write([]byte("game not found"))
 		return
 	}
+
 	Games[g.ID.Hex()] = g
 
 	// client return
@@ -45,43 +39,52 @@ func Game(ws *websocket.Conn) {
 		ws,
 		ws.Request().RemoteAddr,
 	}
-	Clients[id] = append(Clients[id], client)
+	if clients, ok := Clients[id]; ok {
+		var found bool
+		for _, cli := range clients {
+			if cli == client {
+				found = true
+			}
+		}
+		if !found {
+			Clients[id] = append(Clients[id], client)
+		}
+	} else {
+		Clients[id] = append(Clients[id], client)
+	}
 
 	for {
 
 		for i, c := range Clients[id] {
-			log.Print("CLIENT ", c.IP, ws)
 			err = websocket.JSON.Send(c.ws, Games[id])
 			if err != nil {
 				log.Print("WS client connection error: ", err)
-				Clients[id] = append(Clients[id][:i], Clients[id][i+1:]...) //remove dead client
-				// break
+				Clients[id] = append(Clients[id][:i], Clients[id][i+1:]...)
 			}
-		}
-
-		var p game.Play
-		err = websocket.JSON.Receive(ws, &p)
-		if err != nil {
-			log.Print(err)
-			break //TODO - handle errors in WS
-		}
-
-		switch p.PlayType {
-		case "play":
-			Games[id].Round.Plays[p.Player.ID.Hex()] = p // TODO - switch to id.hex
-		case "vote":
-			Games[id].Round.Votes[p.Player.ID.Hex()] = p
-		default:
-			log.Print("type not supported")
 		}
 
 		ch := make(chan game.Game)
 		go func() {
-			if p.PlayType == "play" && len(Games[id].Round.Plays) > 1 { //TODO -len equal to players
+			var p game.Play
+			err = websocket.JSON.Receive(ws, &p)
+			if err != nil {
+				return // break w/o returning game
+			}
+
+			switch p.PlayType {
+			case "play":
+				Games[id].Round.Plays[p.Player.ID.Hex()] = p // TODO - switch to id.hex
+			case "vote":
+				Games[id].Round.Votes[p.Player.ID.Hex()] = p
+			default:
+				log.Print("type not supported")
+			}
+
+			if p.PlayType == "play" && len(Games[id].Round.Plays) == len(Games[id].Players) {
 				ga := Games[id]
 				(&ga).UpdatePlays()
 				ch <- ga
-			} else if p.PlayType == "vote" && len(Games[id].Round.Votes) > 1 {
+			} else if p.PlayType == "vote" && len(Games[id].Round.Votes) == len(Games[id].Players) {
 				ga := Games[id]
 				(&ga).UpdateVotes()
 				ch <- ga

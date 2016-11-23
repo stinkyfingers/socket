@@ -84,3 +84,34 @@ func HandleTestSetup(w http.ResponseWriter, r *http.Request) {
 
 	sendJson(w, g)
 }
+
+func HandleUpload(w http.ResponseWriter, r *http.Request) {
+	decksUser := struct {
+		Deck       []game.Card       `json:"deck"`
+		Player     game.Player       `json:"player"`
+		DealerDeck []game.DealerCard `json:"dealerDeck"`
+	}{}
+
+	err := json.NewDecoder(r.Body).Decode(&decksUser)
+	if err != nil {
+		HttpError{err, "json error", 500, w}.HandleErr()
+		return
+	}
+	dd := game.DealerDeck{
+		Cards: decksUser.DealerDeck,
+	}
+	d := game.Deck{
+		Cards: decksUser.Deck,
+	}
+	err = dd.Create()
+	if err != nil {
+		HttpError{err, "error creating dealer deck", 500, w}.HandleErr()
+		return
+	}
+	err = d.Create()
+	if err != nil {
+		HttpError{err, "error creating deck", 500, w}.HandleErr()
+		return
+	}
+	sendJson(w, decksUser)
+}

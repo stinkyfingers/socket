@@ -16,9 +16,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	handlers.Clients = make(map[string][]handlers.Client)
 	handlers.Games = make(map[string]game.Game)
-
+	handlers.Clients = make(map[string][]handlers.Client)
 	http.Handle("/", websocket.Handler(handlers.Game))
 
 	http.Handle("/game/new", Cors(http.HandlerFunc(handlers.HandleNewGame)))
@@ -35,6 +34,7 @@ func main() {
 	http.HandleFunc("/test", handlers.HandleTestSetup)
 	http.Handle("/auth", Cors(http.HandlerFunc(handlers.HandleAuthenticate)))
 	http.Handle("/status", http.HandlerFunc(handlers.HandleDefault))
+	http.Handle("/upload", http.HandlerFunc(handlers.HandleUpload))
 	log.Fatal(http.ListenAndServe(":7000", nil))
 }
 
