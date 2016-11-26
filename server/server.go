@@ -5,8 +5,9 @@ import (
 	"net/http"
 
 	"github.com/stinkyfingers/socket/server/db"
-	"github.com/stinkyfingers/socket/server/game"
+	// "github.com/stinkyfingers/socket/server/game"
 	"github.com/stinkyfingers/socket/server/handlers"
+	"github.com/stinkyfingers/socket/server/run_handlers"
 	"golang.org/x/net/websocket"
 )
 
@@ -16,10 +17,29 @@ func main() {
 		log.Fatal(err)
 	}
 
-	handlers.Games = make(map[string]game.Game)
-	handlers.Clients = make(map[string][]handlers.Client)
-	http.Handle("/", websocket.Handler(handlers.Game))
+	// handlers.Clients = make(map[string][]handlers.Client)
+	// handlers.Games = make(map[string]game.Game)
 
+	// http.Handle("/", websocket.Handler(handlers.Game))
+
+	h := handlers.NewHub()
+	go h.Run()
+
+	http.Handle("/", websocket.Handler(func(ws *websocket.Conn) {
+		handlers.ServeWS(ws, h)
+	}))
+
+	// p := handlers.NewPool()
+	// http.Handle("/pool", websocket.Handler(func(ws *websocket.Conn) {
+	// 	handlers.Game(ws, p)
+	// }))
+
+	hub := run_handlers.Hubify()
+	http.Handle("/simple", websocket.Handler(func(ws *websocket.Conn) {
+		run_handlers.Handle(ws, hub)
+	}))
+
+	// http
 	http.Handle("/game/new", Cors(http.HandlerFunc(handlers.HandleNewGame)))
 	http.Handle("/game/add", Cors(http.HandlerFunc(handlers.HandleAddPlayer)))
 	http.Handle("/game/init", Cors(http.HandlerFunc(handlers.HandleStartGame)))
@@ -34,7 +54,6 @@ func main() {
 	http.HandleFunc("/test", handlers.HandleTestSetup)
 	http.Handle("/auth", Cors(http.HandlerFunc(handlers.HandleAuthenticate)))
 	http.Handle("/status", http.HandlerFunc(handlers.HandleDefault))
-	http.Handle("/upload", http.HandlerFunc(handlers.HandleUpload))
 	log.Fatal(http.ListenAndServe(":7000", nil))
 }
 

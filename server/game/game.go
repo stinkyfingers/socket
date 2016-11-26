@@ -34,8 +34,8 @@ type MostRecentResults struct {
 }
 
 type Card struct {
-	Phrase string `bson:"phrase" json:"phrase"`
-	Player Player `bson:"player,omitempty" json:"player,omitempty"` // player that holds/plays card
+	Phrase   string        `bson:"phrase" json:"phrase"`
+	PlayerID bson.ObjectId `bson:"playerId,omitempty" json:"playerId,omitempty"`
 }
 
 type DealerCard struct {
@@ -51,7 +51,7 @@ type Play struct {
 type PlayType string
 
 var cardsInHand = 3
-var roundsInGame = 3
+var roundsInGame = 4
 var collection = "difference-between"
 
 func (g *Game) Get() error {
@@ -109,7 +109,7 @@ func (g *Game) Deal() error {
 			index := rand.Intn(total)
 			total--
 			c := g.Deck[index]
-			c.Player = g.Players[p]
+			c.PlayerID = g.Players[p].ID
 			thisPlayer := g.Players[p]
 			thisPlayer.Hand = append(thisPlayer.Hand, c)
 			g.Players[p] = thisPlayer
@@ -186,7 +186,7 @@ func (g *Game) ReplacePlayerCard(p Play) error {
 		for i, c := range g.Players[pid].Hand {
 			if c.Phrase == p.Card.Phrase {
 				newCard := g.DrawNewCard()
-				newCard.Player = g.Players[pid]
+				newCard.PlayerID = g.Players[pid].ID
 				g.Players[pid].Hand[i] = newCard
 				replaced = true
 			}
@@ -234,9 +234,9 @@ func (g *Game) UpdateVotes() error {
 		}
 	}
 
-	// TODO - check
+	// score
 	for _, play := range g.Round.Votes {
-		g.Round.Score[play.Card.Player.ID.Hex()] = append(g.Round.Score[play.Card.Player.ID.Hex()], play)
+		g.Round.Score[play.Card.PlayerID.Hex()] = append(g.Round.Score[play.Card.PlayerID.Hex()], play)
 	}
 
 	// Next Round
@@ -249,10 +249,9 @@ func (g *Game) UpdateVotes() error {
 	g.Rounds = append(g.Rounds, g.Round)
 	r := Round{
 		DealerCards: newDealerCards,
-		// Previous:    &lastRound,
-		Plays: make(map[string]Play),
-		Votes: make(map[string]Play),
-		Score: make(map[string][]Play),
+		Plays:       make(map[string]Play),
+		Votes:       make(map[string]Play),
+		Score:       make(map[string][]Play),
 		MostRecentResults: MostRecentResults{
 			Votes:       g.Round.Votes,
 			DealerCards: g.Round.DealerCards,

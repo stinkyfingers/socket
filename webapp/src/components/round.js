@@ -58,7 +58,7 @@ class Round extends Component {
 			// return;
 		}
 
-		if (this.props.game.round.options && this.props.game.round.options.length > 0) {
+		if (this.props.game.round.options && this.props.game.round.options.length === this.props.game.players.length) {
 			return this.renderVotes();
 		} else {
 			return this.renderCards();
@@ -85,6 +85,17 @@ class Round extends Component {
 
 	}
 
+	getPlayerMap() {
+		const map = {};
+		for (let i in this.props.game.players) {
+			if (!this.props.game.players) {
+				continue;
+			}
+			map[this.props.game.players[i]._id] = this.props.game.players[i];
+		}
+		return map
+	}
+
 	renderPreviousResults() {
 		if (!this.props.game.round.mostRecentResults || !this.props.game.round.mostRecentResults.dealerCards || this.props.game.round.mostRecentResults.dealerCards.length === 0) {
 			return null
@@ -92,6 +103,8 @@ class Round extends Component {
 		const p = this.props.game.round.mostRecentResults;
 		const votes = {};
 		let tally = {};
+		const playerMap = this.getPlayerMap();
+
 		for (let id in p.votes) {
 			if (!p.votes[id]) {
 				continue;
@@ -106,7 +119,7 @@ class Round extends Component {
 					The difference between<span className="previousCard">{p.dealerCards[0].phrase}</span>
 					 and<span className="previousCard">{p.dealerCards[1].phrase}</span> is 
 				<span className="previousCard">{p.votes[id].card.phrase}.</span>
-				(Played by {p.votes[id].card.player.name}). <span className="total">Total: {tally[key]}</span></div>);
+				(Played by {playerMap[p.votes[id].card.playerId].name}). <span className="total">Total: {tally[key]}</span></div>);
 		}
 
 		const out = [];
