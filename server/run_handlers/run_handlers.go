@@ -9,6 +9,7 @@ import (
 )
 
 // Works, but is the simpler, cruder version of the ws handler
+// Use game_ws_handler
 
 type Hub struct {
 	Clients map[string][]Client   // game id: client
@@ -114,3 +115,78 @@ func process(g game.Game, p game.Play) *game.Game {
 	}
 	return &g
 }
+
+// ORIGINAL TEST CODE------------->
+
+// type Client struct {
+// 	ws *websocket.Conn
+// 	IP string
+// }
+
+// var clients map[string][]Client
+// var games map[string]game.Game
+
+// func handler(ws *websocket.Conn) {
+// 	id := ws.Request().URL.Query().Get("id")
+
+// 	var g game.Game
+// 	g.ID = bson.ObjectIdHex(id)
+// 	err := g.Get()
+// 	if err != nil {
+// 		log.Print(err)
+// 		return
+// 	}
+// 	games[g.ID.Hex()] = g
+
+// 	// client return
+// 	client := Client{
+// 		ws,
+// 		ws.Request().RemoteAddr,
+// 	}
+// 	clients[id] = append(clients[id], client)
+
+// 	for {
+
+// 		for _, c := range clients[id] {
+// 			err = websocket.JSON.Send(c.ws, games[id])
+// 			if err != nil {
+// 				log.Print("WS client connection error: ", err)
+// 				// break
+// 			}
+// 		}
+
+// 		var p game.Play
+// 		err = websocket.JSON.Receive(ws, &p)
+// 		if err != nil {
+// 			log.Print(err)
+// 			break //TODO - handle errors in WS
+// 		}
+
+// 		switch p.PlayType {
+// 		case "play":
+// 			games[id].Round.Plays[p.Player.ID.Hex()] = p // TODO - switch to id.hex
+// 		case "vote":
+// 			games[id].Round.Votes[p.Player.ID.Hex()] = p
+// 		default:
+// 			log.Print("type not supported")
+// 		}
+
+// 		ch := make(chan game.Game)
+// 		go func() {
+// 			if p.PlayType == "play" && len(games[id].Round.Plays) > 1 { //TODO -len equal to players
+// 				ga := games[id]
+// 				(&ga).UpdatePlays()
+// 				ch <- ga
+// 			} else if p.PlayType == "vote" && len(games[id].Round.Votes) > 1 {
+// 				ga := games[id]
+// 				(&ga).UpdateVotes()
+// 				ch <- ga
+// 			} else {
+// 				ch <- games[id]
+// 			}
+// 		}()
+
+// 		ga := <-ch
+// 		games[id] = ga
+// 	}
+// }
