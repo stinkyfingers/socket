@@ -28,6 +28,7 @@ func main() {
 	http.Handle("/game/add", Cors(http.HandlerFunc(handlers.HandleAddPlayer)))
 	http.Handle("/game/init", Cors(http.HandlerFunc(handlers.HandleStartGame)))
 	http.Handle("/game/exit", Cors(http.HandlerFunc(handlers.HandleExitGame)))
+	http.Handle("/game/update", Cors(http.HandlerFunc(handlers.HandleUpdateGame)))
 	http.Handle("/game", Cors(http.HandlerFunc(handlers.HandleGetGame)))
 
 	http.Handle("/player/reset", Cors(http.HandlerFunc(handlers.HandleResetPassword)))
@@ -43,6 +44,7 @@ func main() {
 
 func Cors(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		if r.Method == "OPTIONS" {
 			return

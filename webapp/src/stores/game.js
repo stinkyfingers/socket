@@ -98,6 +98,25 @@ var GameStore = Reflux.createStore({
 		});
 	},
 
+	updateGame: function(game) {
+		let code = 0;
+		const url = config.api + '/game/update';
+		fetch(url, {
+			method: 'PUT',
+			body: JSON.stringify(game)
+		}).then((resp) => {
+			code = resp.status;
+			return resp.json();
+		}).then((resp) => {
+			if (code !== 200) {
+				this.trigger({ error: resp });
+				return;
+			}
+			this.unsetGame(resp);
+			this.trigger({ game: null });
+		});
+	},
+
 	play: function(id, user, play) {
 		const ws = this.ws;
 		ws.send(JSON.stringify(play));

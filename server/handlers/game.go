@@ -122,3 +122,18 @@ func HandleExitGame(w http.ResponseWriter, r *http.Request) {
 	}
 	sendJson(w, g)
 }
+
+func HandleUpdateGame(w http.ResponseWriter, r *http.Request) {
+	var g game.Game
+	err := json.NewDecoder(r.Body).Decode(&g)
+	if err != nil {
+		HttpError{err, "error decoding game", 500, w}.HandleErr()
+		return
+	}
+	err = g.Update()
+	if err != nil {
+		HttpError{err, "error updating game", 500, w}.HandleErr()
+		return
+	}
+	sendJson(w, g)
+}

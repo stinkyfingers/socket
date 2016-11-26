@@ -12,6 +12,7 @@ class CreateGame extends Component {
 		this.handleNewGame = this.handleNewGame.bind(this);
 		this.onStatusChange = this.onStatusChange.bind(this);
 		this.handleRefresh = this.handleRefresh.bind(this);
+		this.handleNumRounds = this.handleNumRounds.bind(this);
 	}
 
 	onStatusChange(status) {
@@ -81,11 +82,33 @@ class CreateGame extends Component {
 		return (<div className="waitTostart">Waiting to start...</div>);
 	}
 
+	handleNumRounds(e) {
+		let g = this.state.game;
+		g.roundsInGame = parseInt(e.target.value, 10);
+		GameActions.updateGame(g);
+	}
+
+	renderNumRounds() {
+		let options = [];
+		for (let i = 1; i < 11; i++) {
+			options.push(<option key={'numRound' + i}>{i}</option>);
+		}
+		return(
+			<div className="numRounds">
+				<label>Number of Rounds:</label>
+				<select onChange={this.handleNumRounds}>
+				{options}
+				</select>
+			</div>
+		);
+	}
+
 	render() {
 		return (
 			<div className="createGame">
 				{this.state && this.state.game ? null : <button className="btn createBtn" onClick={this.handleNewGame}>Create New Game</button>}
 				{this.state && this.state.game ? this.handlePlayerList() : null}
+				{this.state && this.state.game ? this.renderNumRounds() : null}
 				{this.state && this.state.game && !this.state.game.initialized ? this.handleInitGameButton() : null}
 			</div>
 		);

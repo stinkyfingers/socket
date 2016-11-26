@@ -10,7 +10,8 @@ var GameActions = Reflux.createActions([
 	'play',
 	'connect',
 	'unsetGame',
-	'exitGame'
+	'exitGame',
+	'updateGame'
 ]);
 
 module.exports = GameActions;
