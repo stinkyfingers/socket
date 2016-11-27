@@ -18,9 +18,6 @@ class Header extends Component {
     if (status.user) {
       this.setState({ user: status.user });
     }
-    if (status.error) {
-      // console.log(status.error)
-    }
   }
 
   componentWillMount() {

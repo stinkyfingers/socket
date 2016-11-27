@@ -50,3 +50,10 @@ TODO
 - edit user/password reset
 - email
 - card editor
+- domain name
+- mass import?
+- use easyrouter
+- edit player save - > redirect
+- logout -> redirect
+- chat
+- remove old games

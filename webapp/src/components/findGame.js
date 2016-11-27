@@ -19,10 +19,6 @@ class FindGame extends Component {
 		if (status.game) {
 			this.setState({ game: status.game });
 		}
-		if (status.error) {
-			console.log(status.error)
-			this.setState({ error: status.error });
-		}
 		if (status.user) {
 			this.setState({ user: status.user });
 		}

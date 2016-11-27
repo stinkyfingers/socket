@@ -49,15 +49,6 @@ class Round extends Component {
 	}
 
 	renderRound() {
-		if (!this.props.game.round.dealerCards) {
-			// this.setState({ error: 'not enough dealer cards '});
-			// return;
-		}
-		if (!this.props.game.round.cards) {
-			// this.setState({ error: 'not enough player cards '});
-			// return;
-		}
-
 		if (this.props.game.round.options && this.props.game.round.options.length === this.props.game.players.length) {
 			return this.renderVotes();
 		} else {

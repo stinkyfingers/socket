@@ -11,6 +11,8 @@ class EditPlayer extends Component {
 		this.handleChange = this.handleChange.bind(this);
 		this.handleClick = this.handleClick.bind(this);
 		this.statusUpdate = this.statusUpdate.bind(this);
+
+		this.saved = false;
 	}
 
 	statusUpdate(status) {
@@ -19,6 +21,7 @@ class EditPlayer extends Component {
 		} 
 		if (status.user === null) {
 			this.setState({ user: {} });
+			this.saved = false;
 			return;
 		}
 }
@@ -47,12 +50,13 @@ class EditPlayer extends Component {
 
 	handleClick() {
 		UserActions.saveUser(this.state.user);
+		this.saved = true;
 	}
 
 	renderEdit() {
 		return (
 			<div className="editContainer">
-				<label htmlFor="name">Name: 
+				<label htmlFor="name">Username (login): 
 					<input type="text" onChange={this.handleChange} name="name" defaultValue={this.state.user.name} />
 				</label>
 				<label htmlFor="email">Email: 
@@ -66,12 +70,20 @@ class EditPlayer extends Component {
 		);
 	}
 
+	renderSuccess() {
+		return (
+			<div className="success">
+				Successfully saved user: {this.state.user.name} ({this.state.user.email})
+			</div>
+		);
+	}
 
 
 	render() {
 		return (
 			<div className="editPlayer">
 				{this.state ? this.renderEdit() : null}
+				{this.state && this.state.user && this.saved ? this.renderSuccess() : null}
 			</div>
 		);
 	}

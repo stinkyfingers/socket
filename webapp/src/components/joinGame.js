@@ -9,24 +9,13 @@ class JoinGame extends Component {
 		this.handleClick = this.handleClick.bind(this);
 	}
 
-	onStatusChange(status) {
-		if (status.error) {
-			console.log(status.error)
-			// this.setState({ error: status.error });
-		}
-	}
-
-	componentWillMount() {
-	}
-
 	componentDidMount() {
 		GameStore.listen(this.onStatusChange);
 	}
 
 	handleClick() {
 		if (this.props.game.intialized) {
-			console.log("Already started")
-			// TODO - handle error
+			this.setState({ error: {message: "Game already started", error: "Start a new game"}});
 			return;
 		}
 

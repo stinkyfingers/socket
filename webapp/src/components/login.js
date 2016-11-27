@@ -16,9 +16,6 @@ class Login extends Component {
 		if (status.user) {
 			this.setState({ user: status.user });
 		}
-		if (status.error) {
-			this.setState({ error: status.error });
-		}
 	}
 
 	componentDidMount() {

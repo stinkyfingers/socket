@@ -2,3 +2,9 @@
 	display: block;
 	margin: auto;
 }
+
+.success {
+	background-color: #090;
+	color: #eee;
+	padding: .2em;
+}

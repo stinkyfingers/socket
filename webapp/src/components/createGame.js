@@ -19,9 +19,6 @@ class CreateGame extends Component {
 		if (status.game && !status.game.initialized) {
 			this.setState({ game: status.game });
 		}
-		if (status.error) {
-			console.log(status.error);
-		}
 		if (status.user) {
 			this.setState({ user: status.user });
 		}

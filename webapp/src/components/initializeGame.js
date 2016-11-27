@@ -17,10 +17,6 @@ class InitializeGame extends Component {
 				window.location.href = '/play/' + status.game._id;
 			}
 		}
-		if (status.error) {
-			console.log(status.error);
-			this.setState({ error: status.error });
-		}
 	}
 
 	componentDidMount() {

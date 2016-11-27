@@ -15,9 +15,6 @@ class Logout extends Component {
 		if (status.user) {
 			this.setState({ user: status.user });
 		}
-		if (status.error) {
-			this.setState({ error: status.error });
-		}
 	}
 
 	componentDidMount() {
@@ -26,6 +23,7 @@ class Logout extends Component {
 
 	handleLogout() {
 		UserActions.unsetUser();
+		window.location.href = '/';
 	}
 
 	render() {
