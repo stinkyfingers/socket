@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math/rand"
 	"strconv"
+	"time"
 
 	"github.com/stinkyfingers/socket/server/db"
 	"gopkg.in/mgo.v2/bson"
@@ -20,6 +21,7 @@ type Game struct {
 	StartedBy    string            `bson:"startedBy" json:"startedBy"`
 	Rounds       []Round           `bson:"rounds" json:"rounds"`
 	RoundsInGame int               `bson:"roundsInGame" json:"roundsInGame"`
+	Created      time.Time         `bson:"created" json:"created"`
 }
 
 type Round struct {
@@ -78,7 +80,24 @@ func (g *Game) Create() error {
 	if len(g.Players) == 1 {
 		g.StartedBy = g.Players[0].ID.Hex()
 	}
+	g.Created = time.Now()
+	err := CleanUpOldGames()
+	if err != nil {
+		return err
+	}
 	return db.Session.DB(db.DB).C(collection).Insert(&g)
+}
+
+// Removes games older than 24 hours
+func CleanUpOldGames() error {
+	selector := bson.M{
+		"created": bson.M{
+			"$lt": time.Now().Add(time.Hour * -24),
+		},
+	}
+
+	_, err := db.Session.DB(db.DB).C(collection).RemoveAll(selector)
+	return err
 }
 
 func (g *Game) AddPlayer(player Player) error {

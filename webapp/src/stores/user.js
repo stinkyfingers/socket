@@ -27,10 +27,10 @@ var UserStore = Reflux.createStore({
 
 	saveUser: function(user) {
 		let code = 0;
-		const path = user._id ? 'update' : 'create';
-		const url = config.api + '/player/' + path;
+		const method = user._id ? 'PUT' : 'POST';
+		const url = config.api + '/player';
 		fetch(url, {
-			method: 'POST',
+			method: method,
 			body: JSON.stringify(user)
 		}).then((resp) => {
 			code = resp.status;
@@ -47,7 +47,7 @@ var UserStore = Reflux.createStore({
 
 	passwordReset: function(email) {
 		let code = 0;
-		const url = config.api + '/player/reset?id=' + email;
+		const url = config.api + '/player/reset/' + email;
 		fetch(url, {
 			method: 'GET'
 		}).then((resp) => {

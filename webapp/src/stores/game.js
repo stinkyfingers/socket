@@ -27,7 +27,7 @@ var GameStore = Reflux.createStore({
 
 	initGame: function(game) {
 		let code = 0;
-		const url = config.api + '/game/init?id=' + game._id;
+		const url = config.api + '/game/init/' + game._id;
 		fetch(url, {
 			method: 'GET'
 		}).then((resp) => {
@@ -45,13 +45,14 @@ var GameStore = Reflux.createStore({
 
 	getGame: function(id) {
 		let code = 0;
-		const url = config.api + '/game?id=' + id;
+		const url = config.api + '/game/' + id;
 		fetch(url, {
 			method: 'GET'
 		}).then((resp) => {
 			code = resp.status;
 			return resp.json();
 		}).then((resp) => {
+
 			if (code !== 200) {
 				this.trigger({ error: resp });
 				return;
@@ -63,7 +64,7 @@ var GameStore = Reflux.createStore({
 
 	joinGame: function(game, user) {
 		let code = 0;
-		const url = config.api + '/game/add?id=' + game._id;
+		const url = config.api + '/game/add/' + game._id;
 		fetch(url, {
 			method: 'POST',
 			body: JSON.stringify(user)
@@ -82,7 +83,7 @@ var GameStore = Reflux.createStore({
 
 	exitGame: function(game) {
 		let code = 0;
-		const url = config.api + '/game/exit?id=' + game._id;
+		const url = config.api + '/game/exit/' + game._id;
 		fetch(url, {
 			method: 'GET'
 		}).then((resp) => {
@@ -130,7 +131,7 @@ var GameStore = Reflux.createStore({
 	},
 
 	connect: function(id) {
-		const ws = new WebSocket(config.websocket + '?id=' + id);
+		const ws = new WebSocket(config.websocket + '/' + id);
 		ws.onopen = (() => {
 			this.ws = ws;
 		});

@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
 import GameActions from '../actions/game';
-import GameStore from '../stores/game';
 
 class JoinGame extends Component {
 	constructor() {
 		super();
-		this.onStatusChange = this.onStatusChange.bind(this);
 		this.handleClick = this.handleClick.bind(this);
 	}
 
-	componentDidMount() {
-		GameStore.listen(this.onStatusChange);
-	}
+
 
 	handleClick() {
 		if (this.props.game.intialized) {
