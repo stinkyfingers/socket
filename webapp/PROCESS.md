@@ -46,7 +46,7 @@ TODO
 - card editor
 - domain name
 - mass import?
-- use easyrouter
 - chat
-- remove old games
 - share gameId
+- cardsInHand
+- delete game (from local storage)

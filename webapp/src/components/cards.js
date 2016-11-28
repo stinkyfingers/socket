@@ -21,7 +21,7 @@ class Cards extends Component {
 	}
 
 	renderCards() {
-		if (this.props.cards.length !== 3) {
+		if (this.props.cards.length < 3) {
 			console.log('not enough cards');
 			// TODO handle error
 			return

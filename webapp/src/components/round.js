@@ -3,7 +3,7 @@ import GameActions from '../actions/game';
 import DealerCards from './dealerCards';
 import Cards from './cards';
 import classNames from 'classnames';
-
+import Chat from './chat';
 
 class Round extends Component {
 	constructor() {
@@ -135,6 +135,7 @@ class Round extends Component {
 				{this.props && this.props.game && this.props.game.round && !this.props.game.finalScore ? this.renderRound() : null}
 				<div className="playerCardsDivider"></div>
 				{this.props && this.props.game && this.props.game.round && this.props.game.round.mostRecentResults ? this.renderPreviousResults() : null}
+				{this.props ? <Chat game={this.props.game} user={this.props.user} /> : null}
 			</div>
 		);
 	}

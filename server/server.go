@@ -21,6 +21,9 @@ func main() {
 	h := handlers.NewHub()
 	go h.Run()
 
+	chub := handlers.NewChatHub()
+	go chub.Run()
+
 	var routes = []easyrouter.Route{
 		{
 			Path:        "/{id}",
@@ -28,6 +31,13 @@ func main() {
 			Middlewares: []easyrouter.Middleware{Cors},
 			WSHandler: websocket.Handler(func(ws *websocket.Conn) {
 				handlers.ServeWS(ws, h)
+			}),
+		}, {
+			Path:        "/chat/{id}",
+			Method:      "GET",
+			Middlewares: []easyrouter.Middleware{Cors},
+			WSHandler: websocket.Handler(func(ws *websocket.Conn) {
+				handlers.ChatHandler(ws, chub)
 			}),
 		}, {
 			Path:        "/game/new",
@@ -83,6 +93,14 @@ func main() {
 			Path:    "/test",
 			Method:  "GET",
 			Handler: handlers.HandleTestSetup,
+		}, {
+			Path:    "/export/dealer/{file}",
+			Method:  "GET",
+			Handler: handlers.HandleExportDealerDeck,
+		}, {
+			Path:    "/import/dealer/{file}",
+			Method:  "POST",
+			Handler: handlers.HandleImportDealerDeck,
 		}, {
 			Path:        "/auth",
 			Method:      "POST",

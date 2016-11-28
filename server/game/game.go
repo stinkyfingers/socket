@@ -2,6 +2,7 @@ package game
 
 import (
 	"errors"
+	"log"
 	"math/rand"
 	"strconv"
 	"time"
@@ -54,7 +55,7 @@ type Play struct {
 
 type PlayType string
 
-var cardsInHand = 3
+var cardsInHand = 7
 var roundsInGame = 4
 var maxPlayers = 10
 var maxRounds = 10
@@ -85,6 +86,7 @@ func (g *Game) Create() error {
 	if err != nil {
 		return err
 	}
+	log.Print(g)
 	return db.Session.DB(db.DB).C(collection).Insert(&g)
 }
 
