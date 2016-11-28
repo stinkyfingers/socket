@@ -41,13 +41,13 @@ func (h *Hub) Run() {
 
 		case client := <-h.Unregister:
 			if _, ok := h.ClientMap[client.GameID]; ok {
+				cm := h.ClientMap[client.GameID]
 				for i := range h.ClientMap[client.GameID] {
 					if &h.ClientMap[client.GameID][i] == client {
-						cm := append(h.ClientMap[client.GameID][:i], h.ClientMap[client.GameID][i+1:]...)
-						h.ClientMap[client.GameID] = cm
+						cm = append(h.ClientMap[client.GameID][:i], h.ClientMap[client.GameID][i+1:]...)
 					}
 				}
-				// close(client.send)
+				h.ClientMap[client.GameID] = cm
 			}
 
 		case message := <-h.Broadcast:
@@ -55,12 +55,13 @@ func (h *Hub) Run() {
 				select {
 				case client.send <- message:
 				default:
+					cm := h.ClientMap[client.GameID]
 					for i := range h.ClientMap[client.GameID] {
 						if h.ClientMap[client.GameID][i] == client {
-							cm := append(h.ClientMap[client.GameID][:i], h.ClientMap[client.GameID][i+1:]...)
-							h.ClientMap[client.GameID] = cm
+							cm = append(h.ClientMap[client.GameID][:i], h.ClientMap[client.GameID][i+1:]...)
 						}
 					}
+					h.ClientMap[client.GameID] = cm
 				}
 			}
 		}
