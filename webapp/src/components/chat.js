@@ -34,7 +34,7 @@ class Chat extends Component {
   }
 
   handleSubmit(e) {
-    if (e.charCode !== 13) {
+    if ((e.charCode !== 13 && e.charCode !== undefined) || !this.state.message || this.state.message === '') {
       return;
     }
     ChatActions.send(this.props.game._id, this.state.message, this.props.user);

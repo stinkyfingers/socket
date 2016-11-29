@@ -86,7 +86,6 @@ func (g *Game) Create() error {
 	if err != nil {
 		return err
 	}
-	log.Print(g)
 	return db.Session.DB(db.DB).C(collection).Insert(&g)
 }
 
@@ -130,7 +129,9 @@ func (g *Game) Deal() error {
 	}
 
 	for p := range g.Players {
+		log.Print(g.Players[p].Name, len(g.Players[p].Hand))
 		for i := len(g.Players[p].Hand); i < cardsInHand; i++ {
+			log.Print("T:", total)
 			index := rand.Intn(total)
 			total--
 			c := g.Deck[index]

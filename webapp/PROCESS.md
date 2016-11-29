@@ -51,3 +51,4 @@ TODO
 - cardsInHand
 - delete game (from local storage)
 - join game if a player when already initialized
+- chat - button still works; no empty sends
