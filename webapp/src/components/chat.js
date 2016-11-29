@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ChatStore from '../stores/chat';
 import ChatActions from '../actions/chat';
-import '../App.css'
+import '../css/chat.css'
 
 class Chat extends Component {
   constructor() {
@@ -13,7 +13,6 @@ class Chat extends Component {
 
   statusUpdate(status) {
     if (status.messages) {
-      console.log(status)
       this.setState({ messages: status.messages });
     }
   }
@@ -34,16 +33,41 @@ class Chat extends Component {
     this.setState({ message: e.target.value });
   }
 
-  handleSubmit() {
+  handleSubmit(e) {
+    if (e.charCode !== 13) {
+      return;
+    }
     ChatActions.send(this.props.game._id, this.state.message, this.props.user);
+    this.refs.input.value = '';
+  }
+
+  renderMessages() {
+    const maxLen = 20;
+    const messages = [];
+    if (this.state.messages.length > maxLen) {
+      this.state.messages.splice(0, this.state.messages.length - maxLen);
+    }
+    for (let i in this.state.messages) {
+      if (!this.state.messages[i]) {
+        continue;
+      }
+      messages.push(<div className="chatLine" key={'message' + i}><span className="bold">{this.state.messages[i].message.playerName}:</span> {this.state.messages[i].message.text}</div>)
+    }
+
+    return (
+      <div className="chatWindow">
+        {messages}
+      </div>
+    );
   }
 
   render() {
-    return (
-      <div className="chat">Chat
 
-        <input type="text" name="message"  onChange={this.handleChange} />
+    return (
+      <div className="chat">
+        <input type="text" name="message" onKeyPress={this.handleSubmit} onChange={this.handleChange} ref="input" placeholder="chat..." />
         <button onClick={this.handleSubmit} className="btn submit">Send</button>
+        {this.state && this.state.messages ? this.renderMessages() : null}
       </div>
     );
   }

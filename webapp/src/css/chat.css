@@ -1,0 +1,20 @@
+.chatWindow {
+	border: 1px solid #333;
+	border-radius: 3px;
+	max-width: 90%;
+	margin: auto;
+	text-align: left;
+	padding: .2em;
+}
+
+.chatWindow > div {
+	padding: .1em;
+}
+
+.chatWindow > div:nth-child(odd) {
+	background-color: #ddd;
+}
+
+.bold {
+	font-weight: 800;
+}

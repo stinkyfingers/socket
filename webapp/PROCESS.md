@@ -50,3 +50,4 @@ TODO
 - share gameId
 - cardsInHand
 - delete game (from local storage)
+- join game if a player when already initialized

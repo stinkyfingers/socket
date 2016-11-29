@@ -135,6 +135,7 @@ class Round extends Component {
 				{this.props && this.props.game && this.props.game.round && !this.props.game.finalScore ? this.renderRound() : null}
 				<div className="playerCardsDivider"></div>
 				{this.props && this.props.game && this.props.game.round && this.props.game.round.mostRecentResults ? this.renderPreviousResults() : null}
+				<div className="playerCardsDivider"></div>
 				{this.props ? <Chat game={this.props.game} user={this.props.user} /> : null}
 			</div>
 		);
