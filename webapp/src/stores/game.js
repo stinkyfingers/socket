@@ -131,7 +131,7 @@ var GameStore = Reflux.createStore({
 	},
 
 	connect: function(id) {
-		const ws = new WebSocket(config.websocket + '/' + id);
+		const ws = new WebSocket(config.websocket + '/play/' + id);
 		ws.onopen = (() => {
 			this.ws = ws;
 		});
@@ -149,7 +149,7 @@ var GameStore = Reflux.createStore({
 
 	getGameFromStorage: function() {
 		const game = sessionStorage.getItem('game');
-		this.trigger({ game:JSON.parse(game) });
+		this.trigger({ game: JSON.parse(game) });
 	},
 
 	unsetGame: function() {

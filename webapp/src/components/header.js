@@ -5,6 +5,7 @@ import PasswordReset from './passwordReset';
 import GameActions from '../actions/game';
 import UserActions from '../actions/user';
 import UserStore from '../stores/user';
+import GameStore from '../stores/game';
 import '../css/header.css';
 
 class Header extends Component {
@@ -18,18 +19,24 @@ class Header extends Component {
     if (status.user) {
       this.setState({ user: status.user });
     }
+    if (status.game) {
+      this.setState({ game: status.game });
+    }
   }
 
   componentWillMount() {
     UserActions.getUser();
+    GameActions.getGameFromStorage();
   }
 
   componentDidMount() {
     this.unlisten = UserStore.listen(this.statusUpdate);
+    this.unlistenGame = GameStore.listen(this.statusUpdate);
   }
 
   componentWillUnmount() {
     this.unlisten();
+    this.unlistenGame();
   }
 
 
@@ -60,7 +67,7 @@ class Header extends Component {
   }
 
   renderCancelGame() {
-    if (this.props.game.startedBy !== this.state.user._id) {
+    if (this.state && this.state.user && this.state.game.startedBy !== this.state.user._id) {
       return null;
     }
     return (<button className="cancel btn submit" onClick={this.handleCancel}>Cancel Game</button>);

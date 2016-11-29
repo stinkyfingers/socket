@@ -26,7 +26,7 @@ func main() {
 
 	var routes = []easyrouter.Route{
 		{
-			Path:        "/{id}",
+			Path:        "/play/{id}",
 			Method:      "GET",
 			Middlewares: []easyrouter.Middleware{Cors},
 			WSHandler: websocket.Handler(func(ws *websocket.Conn) {

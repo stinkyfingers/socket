@@ -2,7 +2,6 @@ package game
 
 import (
 	"errors"
-	"log"
 	"math/rand"
 	"strconv"
 	"time"
@@ -129,9 +128,10 @@ func (g *Game) Deal() error {
 	}
 
 	for p := range g.Players {
-		log.Print(g.Players[p].Name, len(g.Players[p].Hand))
 		for i := len(g.Players[p].Hand); i < cardsInHand; i++ {
-			log.Print("T:", total)
+			if total < 1 {
+				return errors.New("not enough cards in deck to deal cards")
+			}
 			index := rand.Intn(total)
 			total--
 			c := g.Deck[index]
