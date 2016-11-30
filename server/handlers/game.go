@@ -15,19 +15,20 @@ func HandleNewGame(w http.ResponseWriter, r *http.Request) {
 		HttpError{err, "Player required to start game", 500, w}.HandleErr()
 		return
 	}
-	deck, err := game.GetDeck()
+	deck, err := game.GetAllCards()
 	if err != nil {
 		HttpError{err, "error getting deck", 500, w}.HandleErr()
 		return
 	}
-	dealerDeck, err := game.GetDealerDeck()
+	dealerDeck, err := game.GetAllDealerCards()
 	if err != nil {
 		HttpError{err, "error getting dealer deck", 500, w}.HandleErr()
 		return
 	}
+
 	g := game.Game{
-		Deck:       deck.Cards,
-		DealerDeck: dealerDeck.Cards,
+		Deck:       deck,
+		DealerDeck: dealerDeck,
 		Players:    []game.Player{player},
 	}
 	err = g.Create()

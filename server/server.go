@@ -94,13 +94,31 @@ func main() {
 			Method:  "GET",
 			Handler: handlers.HandleTestSetup,
 		}, {
+			Path:    "/import/dealer/{id}",
+			Method:  "POST",
+			Handler: handlers.HandleImportDealerCards,
+		}, {
+			Path:    "/import/card/{id}",
+			Method:  "POST",
+			Handler: handlers.HandleImportCards,
+		}, {
+			Path:        "/card",
+			Method:      "POST",
+			Handler:     handlers.HandleCreateCard,
+			Middlewares: []easyrouter.Middleware{Cors},
+		}, {
+			Path:        "/dealer",
+			Method:      "POST",
+			Handler:     handlers.HandleCreateDealerCard,
+			Middlewares: []easyrouter.Middleware{Cors},
+		}, {
 			Path:    "/export/dealer/{file}",
 			Method:  "GET",
 			Handler: handlers.HandleExportDealerDeck,
 		}, {
-			Path:    "/import/dealer/{file}",
+			Path:    "/export/cards/{file}",
 			Method:  "POST",
-			Handler: handlers.HandleImportDealerDeck,
+			Handler: handlers.HandleExportDeck,
 		}, {
 			Path:        "/auth",
 			Method:      "POST",

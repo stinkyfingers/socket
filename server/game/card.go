@@ -10,16 +10,18 @@ import (
 )
 
 type Card struct {
-	ID        bson.ObjectId `bson:"_id" json:"_id"`
-	Phrase    string        `bson:"phrase" json:"phrase"`
-	PlayerID  bson.ObjectId `bson:"playerId,omitempty" json:"playerId,omitempty"`
-	CreatedBy bson.ObjectId `bson:"createdBy,omitempty" json:"createdBy,omitempty"`
+	ID                bson.ObjectId `bson:"_id" json:"_id"`
+	Phrase            string        `bson:"phrase" json:"phrase"`
+	PlayerID          bson.ObjectId `bson:"playerId,omitempty" json:"playerId,omitempty"`
+	CreatedBy         bson.ObjectId `bson:"createdBy,omitempty" json:"createdBy,omitempty"`
+	CorporateApproved bool          `bson:"corporateApproved" json:"corporateApproved"`
 }
 
 type DealerCard struct {
-	ID        bson.ObjectId `bson:"_id" json:"_id"`
-	Phrase    string        `bson:"phrase" json:"phrase"`
-	CreatedBy bson.ObjectId `bson:"createdBy,omitempty" json:"createdBy,omitempty"`
+	ID                bson.ObjectId `bson:"_id" json:"_id"`
+	Phrase            string        `bson:"phrase" json:"phrase"`
+	CreatedBy         bson.ObjectId `bson:"createdBy,omitempty" json:"createdBy,omitempty"`
+	CorporateApproved bool          `bson:"corporateApproved" json:"corporateApproved"`
 }
 
 var (
@@ -28,6 +30,7 @@ var (
 )
 
 func (c *Card) Create() error {
+	c.ID = bson.NewObjectId()
 	return db.Session.DB(db.DB).C(cardCollection).Insert(c)
 }
 
@@ -73,6 +76,7 @@ func (c *Card) Audit() error {
 }
 
 func (c *DealerCard) Create() error {
+	c.ID = bson.NewObjectId()
 	return db.Session.DB(db.DB).C(dealerCardCollection).Insert(c)
 }
 

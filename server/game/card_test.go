@@ -13,7 +13,6 @@ func TestCardCRUD(t *testing.T) {
 	defer cleanup(cardCollection)
 
 	c := Card{
-		ID:        bson.NewObjectId(),
 		Phrase:    "test 1",
 		CreatedBy: bson.NewObjectId(),
 	}
@@ -70,7 +69,6 @@ func TestDealerCardCRUD(t *testing.T) {
 	dealerCardCollection = "tempDealerCollection"
 	defer cleanup(dealerCardCollection)
 	c := DealerCard{
-		ID:        bson.NewObjectId(),
 		Phrase:    "dealertest 1",
 		CreatedBy: bson.NewObjectId(),
 	}
