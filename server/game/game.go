@@ -37,15 +37,6 @@ type MostRecentResults struct {
 	Votes       map[string]Play `bson:"votes" json:"votes"`
 }
 
-type Card struct {
-	Phrase   string        `bson:"phrase" json:"phrase"`
-	PlayerID bson.ObjectId `bson:"playerId,omitempty" json:"playerId,omitempty"`
-}
-
-type DealerCard struct {
-	Phrase string `bson:"phrase" json:"phrase"`
-}
-
 type Play struct {
 	Player   Player   `bson:"player" json:"player"`
 	Card     Card     `bson:"card" json:"card"`
