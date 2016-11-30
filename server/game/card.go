@@ -2,7 +2,6 @@ package game
 
 import (
 	"errors"
-
 	"strings"
 
 	"github.com/stinkyfingers/socket/server/db"

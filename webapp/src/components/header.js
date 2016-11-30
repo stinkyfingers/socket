@@ -13,6 +13,7 @@ class Header extends Component {
     super()
     this.handleCancel = this.handleCancel.bind(this);
     this.statusUpdate = this.statusUpdate.bind(this);
+    this.handleEditCard = this.handleEditCard.bind(this);
   }
 
   statusUpdate(status) {
@@ -66,11 +67,19 @@ class Header extends Component {
     window.location.href = '/';
   }
 
+  handleEditCard() {
+    window.location.href = '/card';
+  }
+
   renderCancelGame() {
     if (this.state && this.state.user && this.state.game.startedBy !== this.state.user._id) {
       return null;
     }
     return (<button className="cancel btn submit" onClick={this.handleCancel}>Cancel Game</button>);
+  }
+
+  renderCreateCard() {
+    return (<button className="cancel btn create" onClick={this.handleEditCard}>Create Card</button>);
   }
 
   render() {
@@ -84,6 +93,7 @@ class Header extends Component {
           {this.state && this.state.user ? null : <PasswordReset className="reset" />}
           {this.state && this.state.user ? <Logout className="login" /> : null}
           {this.state && this.state.game ? this.renderCancelGame() : null}
+          {this.state && this.state.user ? this.renderCreateCard() : null}
         </div>
       </div>
     );
