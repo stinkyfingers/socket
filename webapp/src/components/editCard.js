@@ -28,7 +28,7 @@ class EditCard extends Component {
 
 	componentWillMount() {
 		UserActions.getUser();
-		this.setState({ type: 'card' });
+		this.setState({ type: 'Card' });
 	}
 
 	componentDidMount() {

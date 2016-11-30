@@ -12,6 +12,9 @@ app.get('/create', (r, w) => {
 app.all('/play/*', (r, w) => {
 	w.sendFile('build/index.html', {root: __dirname});
 });
+app.all('/card', (r, w) => {
+	w.sendFile('build/index.html', {root: __dirname});
+});
 app.all('/', (r, w) => {
 	w.sendFile('build/index.html', {root: __dirname});
 });
