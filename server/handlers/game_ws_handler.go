@@ -82,12 +82,14 @@ func ServeWS(ws *websocket.Conn, h *Hub) {
 		return
 	}
 
-	h.Games[g.ID.Hex()] = &g
+	if h.Games[g.ID.Hex()] == nil || !h.Games[g.ID.Hex()].Initialized {
+		h.Games[g.ID.Hex()] = &g
+	}
 
 	cli := WSClient{Conn: *ws, GameID: id, Hub: h, send: make(chan *game.Game)}
 	h.Register <- &cli
 	go cli.write()
-	cli.Hub.Broadcast <- &g
+	cli.Hub.Broadcast <- h.Games[g.ID.Hex()]
 	err = cli.read()
 	if err != nil {
 		websocket.JSON.Send(ws, HttpError{Error: err, Message: "Error in Websocket read loop", Status: 500})

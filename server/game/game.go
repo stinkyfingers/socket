@@ -56,7 +56,7 @@ func (g *Game) Get() error {
 	g.Round.Plays = make(map[string]Play)
 	g.Round.Votes = make(map[string]Play)
 	g.Round.Score = make(map[string][]Play)
-	if len(g.Rounds) == roundsInGame {
+	if len(g.Rounds) == g.RoundsInGame {
 		return g.TallyScore()
 	}
 	return err
@@ -286,7 +286,7 @@ func (g *Game) UpdateVotes() error {
 	g.Round = r
 
 	// Check for game end
-	if len(g.Rounds) == roundsInGame {
+	if len(g.Rounds) == g.RoundsInGame {
 		return g.TallyScore()
 	}
 
