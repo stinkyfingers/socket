@@ -42,13 +42,17 @@
 	margin: auto;
 }
 
-.submit {
+.submit, .create {
 	background-color: #eee;
 	color: #333;
 }
-.submit:hover {
+.submit:hover, .create:hover {
 	background-color: #333;
 	color: #eee;
+}
+
+.logo {
+	max-height: 100px;
 }
 
 @media (min-width: 600px) {

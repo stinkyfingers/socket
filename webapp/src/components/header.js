@@ -86,7 +86,7 @@ class Header extends Component {
     return (
       <div className="App">
         <div className="App-header">
-          <h1>The Difference Between</h1>
+          <img className="logo" src={require("../../public/logo.png")} alt="The Difference Between"/>
           {this.renderNav()}
           {this.state && this.state.user ? this.userDisplay() : null }
           {this.state && this.state.user ? null : <Login className="login" user={null} />}
