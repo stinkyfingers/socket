@@ -7,15 +7,23 @@
 	margin: .5em;
 	padding: 1em;
 	border-radius: .4em;
-	background-color: #eed;
+	background-color: rgba(178,224,255,100);
 	box-shadow: 2px 2px 4px #ddd;
+  font-size: 1.2em;
+  min-width: 30%;
 }
 
+.dealerCard {
+  background-color: rgba(0,84,127,100 );
+  color: #eee;
+}
 
-
-.dealerCards {
+.dealerCardsContainer {
 	display: block;
 	margin: 1.5em 0;
+}
+.dealerCardsContainer > span {
+  font-size: 1.2em;
 }
 
 /* TOGGLE */
