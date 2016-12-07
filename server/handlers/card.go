@@ -111,3 +111,46 @@ func HandleImportDealerCards(w http.ResponseWriter, r *http.Request) {
 	}
 	sendJson(w, cards)
 }
+
+func HandleUnreviewedCards(w http.ResponseWriter, r *http.Request) {
+	dealerCards, cards, err := game.GetUnreviewedCards()
+	if err != nil {
+		HttpError{err, "Error getting cards", 500, w}.HandleErr()
+		return
+	}
+	all := struct {
+		DealerCards []game.DealerCard `json:"dealerCards"`
+		Cards       []game.Card       `json:"cards"`
+	}{dealerCards, cards}
+	sendJson(w, all)
+}
+
+func HandleUpdateCard(w http.ResponseWriter, r *http.Request) {
+	var c game.Card
+	err := json.NewDecoder(r.Body).Decode(&c)
+	if err != nil {
+		HttpError{err, "Error decoding card", 500, w}.HandleErr()
+		return
+	}
+	err = c.Update()
+	if err != nil {
+		HttpError{err, "Error updating card", 500, w}.HandleErr()
+		return
+	}
+	sendJson(w, c)
+}
+
+func HandleUpdateDealerCard(w http.ResponseWriter, r *http.Request) {
+	var c game.DealerCard
+	err := json.NewDecoder(r.Body).Decode(&c)
+	if err != nil {
+		HttpError{err, "Error decoding card", 500, w}.HandleErr()
+		return
+	}
+	err = c.Update()
+	if err != nil {
+		HttpError{err, "Error updating card", 500, w}.HandleErr()
+		return
+	}
+	sendJson(w, c)
+}

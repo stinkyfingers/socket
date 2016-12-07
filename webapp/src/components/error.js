@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import GameStore from '../stores/game';
 import UserStore from '../stores/user';
+import CardStore from '../stores/card';
 import '../App.css'
 
 class Error extends Component {
@@ -18,10 +19,12 @@ class Error extends Component {
   componentDidMount() {
     this.unlisten = UserStore.listen(this.statusUpdate);
     this.unlisten = GameStore.listen(this.statusUpdate);
+    this.unlistenCard = CardStore.listen(this.statusUpdate);
   }
 
   componentWillUnmount() {
     this.unlisten();
+    this.unlistenCard();
   }
 
   renderError() {

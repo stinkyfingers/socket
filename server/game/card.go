@@ -14,6 +14,7 @@ type Card struct {
 	PlayerID          bson.ObjectId `bson:"playerId,omitempty" json:"playerId,omitempty"`
 	CreatedBy         bson.ObjectId `bson:"createdBy,omitempty" json:"createdBy,omitempty"`
 	CorporateApproved bool          `bson:"corporateApproved" json:"corporateApproved"`
+	CorporateReviewed bool          `bson:"corporateReviewed" json:"corporateReviewed"`
 }
 
 type DealerCard struct {
@@ -21,6 +22,7 @@ type DealerCard struct {
 	Phrase            string        `bson:"phrase" json:"phrase"`
 	CreatedBy         bson.ObjectId `bson:"createdBy,omitempty" json:"createdBy,omitempty"`
 	CorporateApproved bool          `bson:"corporateApproved" json:"corporateApproved"`
+	CorporateReviewed bool          `bson:"corporateReviewed" json:"corporateReviewed"`
 }
 
 var (
@@ -118,4 +120,39 @@ func (c *DealerCard) Audit() error {
 		return errors.New("Card already exists")
 	}
 	return nil
+}
+
+func GetUnreviewedCards() ([]DealerCard, []Card, error) {
+	query := bson.M{
+		"$or": []interface{}{
+			bson.M{"corporateReviewed": false}, bson.M{"corporateReviewed": nil},
+		},
+	}
+	var dealerCards []DealerCard
+	var cards []Card
+	err := db.Session.DB(db.DB).C(dealerCardCollection).Find(query).All(&dealerCards)
+	if err != nil {
+		return dealerCards, cards, err
+	}
+	err = db.Session.DB(db.DB).C(cardCollection).Find(query).All(&cards)
+	if err != nil {
+		return dealerCards, cards, err
+	}
+	return dealerCards, cards, err
+}
+
+func (c *Card) Update() error {
+	update := bson.M{
+		"corporateApproved": c.CorporateApproved,
+		"corporateReviewed": true,
+	}
+	return db.Session.DB(db.DB).C(cardCollection).UpdateId(c.ID, update)
+}
+
+func (c *DealerCard) Update() error {
+	update := bson.M{
+		"corporateApproved": c.CorporateApproved,
+		"corporateReviewed": true,
+	}
+	return db.Session.DB(db.DB).C(dealerCardCollection).UpdateId(c.ID, update)
 }

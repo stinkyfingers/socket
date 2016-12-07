@@ -19,6 +19,7 @@ type Player struct {
 	Password          string `bson:"-" json:"password"`
 	EncryptedPassword []byte `bson:"encryptedPassword" json:"-"`
 	Email             string `bson:"email" json:"email"`
+	GrandPoobah       bool   `bson:"grandPoobah" json:"grandPoobah"`
 }
 
 var playerCollection = "difference-between-players"

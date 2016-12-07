@@ -9,7 +9,7 @@ type HttpError struct {
 	Error   error  `json:"-"`
 	Message string `json:"message"`
 	Status  int    `json:"statusCode"`
-	w       http.ResponseWriter
+	W       http.ResponseWriter
 }
 
 func (h HttpError) HandleErr() {
@@ -26,11 +26,11 @@ func (h HttpError) HandleErr() {
 	}
 	j, err := json.Marshal(errWriter)
 	if err != nil {
-		h.w.Write([]byte("error erroring error"))
+		h.W.Write([]byte("error erroring error"))
 		return
 	}
-	h.w.WriteHeader(h.Status)
-	h.w.Header().Set("Content-Type", "application/json")
-	h.w.Write(j)
+	h.W.WriteHeader(h.Status)
+	h.W.Header().Set("Content-Type", "application/json")
+	h.W.Write(j)
 	return
 }

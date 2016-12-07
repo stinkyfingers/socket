@@ -1,7 +1,9 @@
 import Reflux from 'reflux';
 
 var CardActions = Reflux.createActions([
-	'create'
+	'create',
+	'unreviewed',
+	'approve'
 ]);
 
 module.exports = CardActions;

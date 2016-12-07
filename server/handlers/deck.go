@@ -14,13 +14,13 @@ func HandleExportDealerDeck(w http.ResponseWriter, r *http.Request) {
 	file := r.URL.Query().Get("file")
 	dealerDeck, err := game.GetAllDealerCards()
 	if err != nil {
-		HttpError{Error: err, Message: "Error getting deck", Status: 500, w: w}.HandleErr()
+		HttpError{Error: err, Message: "Error getting deck", Status: 500, W: w}.HandleErr()
 		return
 	}
 
 	f, err := os.Create(file)
 	if err != nil {
-		HttpError{Error: err, Message: "Error creating file", Status: 500, w: w}.HandleErr()
+		HttpError{Error: err, Message: "Error creating file", Status: 500, W: w}.HandleErr()
 		return
 	}
 	writer := csv.NewWriter(f)
@@ -40,13 +40,13 @@ func HandleExportDeck(w http.ResponseWriter, r *http.Request) {
 	file := r.URL.Query().Get("file")
 	deck, err := game.GetAllCards()
 	if err != nil {
-		HttpError{Error: err, Message: "Error getting deck", Status: 500, w: w}.HandleErr()
+		HttpError{Error: err, Message: "Error getting deck", Status: 500, W: w}.HandleErr()
 		return
 	}
 
 	f, err := os.Create(file)
 	if err != nil {
-		HttpError{Error: err, Message: "Error creating file", Status: 500, w: w}.HandleErr()
+		HttpError{Error: err, Message: "Error creating file", Status: 500, W: w}.HandleErr()
 		return
 	}
 	writer := csv.NewWriter(f)

@@ -9,6 +9,7 @@ import FindGame from './components/findGame';
 import Header from './components/header';
 import EditPlayer from './components/editPlayer';
 import EditCard from './components/editCard';
+import Audit from './components/audit';
 import Error from './components/error';
 
 class App extends Component {
@@ -48,7 +49,10 @@ class App extends Component {
           Child = <EditPlayer />;
           break;
         case '/card':
-          Child = <EditCard />
+          Child = <EditCard />;
+          break;
+        case '/audit':
+          Child = <Audit />;
           break;
         default:
           Child = <FindGame />;
