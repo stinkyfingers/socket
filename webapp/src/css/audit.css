@@ -1,0 +1,35 @@
+
+.cardTable {
+	margin: auto;
+	margin-top: 2em;
+}
+
+.cardRow > td{
+	padding: .4em;
+}
+
+.cardRow:nth-child(even) {
+	background-color: #eee;
+}
+
+.approve {
+	background-color: green;
+	color: #eee;
+	border-radius: .3em;
+}
+.approve:hover {
+	background-color: #cec;
+	color: #333;
+	cursor: pointer;
+}
+
+.disapprove {
+	background-color: red;
+	color: #eee;
+	border-radius: .3em;
+}
+.disapprove:hover {
+	background-color: #ecc;
+	color: #333;
+	cursor: pointer;
+}
