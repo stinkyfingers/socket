@@ -1,97 +1,120 @@
 package game
 
-// import (
-// 	"os"
-// 	"reflect"
-// 	"testing"
+import (
+	"encoding/json"
+	"io/ioutil"
+	"testing"
 
-// 	"github.com/stinkyfingers/socket/server/db"
-// 	"gopkg.in/mgo.v2/bson"
-// )
+	"github.com/stinkyfingers/socket/server/db"
+)
 
-// func TestMain(m *testing.M) {
-// 	db.NewSession()
-// 	os.Exit(m.Run())
-// }
+func TestDeal(t *testing.T) {
+	defer cleanup("test_game")
 
-// func TestGet(t *testing.T) {
-// 	t.Log("Test Get")
-// 	g := Game{
-// 		ID: bson.ObjectIdHex("58291ddadd162c05e145c413"),
-// 	}
-// 	err := g.Get()
-// 	if err != nil {
-// 		t.Error(err)
-// 	}
-// }
+	err := db.NewSession()
+	if err != nil {
+		t.Error(err)
+	}
+	db.DB = "test_game"
 
-// func TestGetRounds(t *testing.T) {
-// 	t.Log("Test GetRounds")
-// 	r1 := Round{
-// 		Score:    map[string][]Play{"1": []Play{{}}},
-// 		Previous: nil,
-// 	}
-// 	r2 := Round{
-// 		Score:    map[string][]Play{"2": []Play{{}}},
-// 		Previous: &r1,
-// 	}
-// 	r3 := Round{
-// 		Score:    map[string][]Play{"3": []Play{{}}},
-// 		Previous: &r2,
-// 	}
-// 	g := Game{
-// 		Round: r3,
-// 	}
-// 	rounds := g.GetRounds()
+	players, err := TwoUsers()
+	if err != nil {
+		t.Error(err)
+	}
 
-// 	if !reflect.DeepEqual(rounds, []Round{r3, r2, r1}) {
-// 		t.Error("Expected to find three rounds")
-// 	}
-// }
+	err = setupDecks()
+	if err != nil {
+		t.Error(err)
+	}
 
-// func TestUpdateVotes(t *testing.T) {
-// 	id1 := bson.NewObjectId()
-// 	id2 := bson.NewObjectId()
-// 	g := Game{
-// 		Players: []Player{
-// 			{
-// 				Name: "Jim",
-// 				Hand: []Card{
-// 					{Phrase: "test"},
-// 					{Phrase: "test2"},
-// 				},
-// 				ID: id1,
-// 			},
-// 			{
-// 				Name: "Fred",
-// 				Hand: []Card{
-// 					{Phrase: "test3"},
-// 					{Phrase: "test4"},
-// 				},
-// 				ID: id2,
-// 			},
-// 		},
-// 		Round: Round{
-// 			Votes: map[string]Play{
-// 				id1.Hex(): {
-// 					Card: Card{
-// 						Phrase: "test",
-// 					},
-// 					Player: Player{ID: id1},
-// 				}, id2.Hex(): {
-// 					Card: Card{
-// 						Phrase: "test",
-// 					},
-// 					Player: Player{ID: id1},
-// 				},
-// 			},
-// 		},
-// 		ID:         bson.NewObjectId(),
-// 		DealerDeck: []DealerCard{{Phrase: ""}, {Phrase: ""}, {Phrase: ""}, {Phrase: ""}, {Phrase: ""}, {Phrase: ""}, {Phrase: ""}},
-// 		Deck:       []Card{{}, {}, {}, {}},
-// 	}
-// 	err := g.UpdateVotes()
-// 	if err != nil {
-// 		t.Error(err)
-// 	}
-// }
+	deck, err := GetAllCards()
+	if err != nil {
+		t.Error(err)
+	}
+	dealerDeck, err := GetAllDealerCards()
+	if err != nil {
+		t.Error(err)
+	}
+
+	g := Game{
+		Deck:       deck,
+		DealerDeck: dealerDeck,
+		Players:    players,
+	}
+	err = g.Create()
+
+	err = g.Deal()
+	if err != nil {
+		t.Error(err)
+	}
+
+}
+
+func setupDecks() error {
+	//cards
+	var cards []Card
+	b, err := ioutil.ReadFile("../cards.json")
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(b, &cards)
+	if err != nil {
+		return err
+	}
+
+	for _, card := range cards {
+		err = card.Create()
+		if err != nil {
+			return err
+		}
+	}
+
+	var dealerCards []DealerCard
+	b, err = ioutil.ReadFile("../dealerCards.json")
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(b, &dealerCards)
+	if err != nil {
+		return err
+	}
+
+	for _, card := range dealerCards {
+		err = card.Create()
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func TwoUsers() ([]Player, error) {
+	err := db.NewSession()
+	if err != nil {
+		return nil, err
+	}
+	db.DB = "test_game"
+	var users []Player
+	p1 := Player{
+		Name:     "Zach",
+		Password: "foo",
+	}
+	p2 := Player{
+		Name:     "Zed",
+		Password: "foo",
+	}
+	err = p1.Create()
+	if err != nil {
+		return users, err
+	}
+
+	err = p2.Create()
+	if err != nil {
+		return users, err
+	}
+	users = []Player{p1, p2}
+	return users, err
+}
