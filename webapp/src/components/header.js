@@ -14,6 +14,7 @@ class Header extends Component {
     this.handleCancel = this.handleCancel.bind(this);
     this.statusUpdate = this.statusUpdate.bind(this);
     this.handleEditCard = this.handleEditCard.bind(this);
+    this.handleReset = this.handleReset.bind(this);
   }
 
   statusUpdate(status) {
@@ -75,6 +76,11 @@ class Header extends Component {
     window.location.href = '/audit';
   }
 
+  handleReset() {
+    GameActions.unsetGame();
+    window.location.href = '/';
+  }
+
   renderCancelGame() {
     if (this.state && this.state.user && this.state.game.startedBy !== this.state.user._id) {
       return null;
@@ -103,6 +109,7 @@ class Header extends Component {
           {this.state && this.state.game ? this.renderCancelGame() : null}
           {this.state && this.state.user ? this.renderCreateCard() : null}
           {this.state && this.state.user && this.state.user.grandPoobah ? this.renderAuditCards(): null}
+          <span className="wonky" onClick={this.handleReset}>Something's WoNkY</span>
         </div>
       </div>
     );

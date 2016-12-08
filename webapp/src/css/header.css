@@ -54,6 +54,12 @@
 .logo {
 	max-height: 100px;
 }
+.wonky {
+	position: absolute;
+	color: #333;
+	right:3px;
+	font-size:.7em;
+}
 
 @media (min-width: 600px) {
 	.login label input {
