@@ -53,6 +53,7 @@
 
 .logo {
 	max-height: 100px;
+	max-width: 96%;
 }
 .wonky {
 	position: absolute;
