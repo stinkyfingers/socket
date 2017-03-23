@@ -24,12 +24,16 @@ func getDialInfo() *mgo.DialInfo {
 	}
 	user := os.Getenv("MONGO_USER")
 	pass := os.Getenv("MONGO_PASS")
+	admin := os.Getenv("MONGO_ADMIN")
+	if admin == "" {
+		admin = "admin"
+	}
 
 	return &mgo.DialInfo{
 		Addrs:    []string{cs},
-		Database: "admin",
+		Database: admin,
 		Timeout:  time.Second,
-		Source:   "admin",
+		Source:   admin,
 		Username: user,
 		Password: pass,
 	}
