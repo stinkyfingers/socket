@@ -4,6 +4,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/stinkyfingers/easyrouter"
 	"github.com/stinkyfingers/socket/server/db"
@@ -29,121 +30,121 @@ func main() {
 	var routes = []easyrouter.Route{
 		{
 			Path:        "/play/{id}",
-			Method:      "GET",
+			Methods:     []string{"GET"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			WSHandler: websocket.Handler(func(ws *websocket.Conn) {
 				handlers.ServeWS(ws, h)
 			}),
 		}, {
 			Path:        "/chat/{id}",
-			Method:      "GET",
+			Methods:     []string{"GET"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			WSHandler: websocket.Handler(func(ws *websocket.Conn) {
 				handlers.ChatHandler(ws, chub)
 			}),
 		}, {
 			Path:        "/game/new",
-			Method:      "POST",
+			Methods:     []string{"POST"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			Handler:     handlers.HandleNewGame,
 		}, {
 			Path:        "/game/add/{id}",
-			Method:      "POST",
+			Methods:     []string{"POST"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			Handler:     handlers.HandleAddPlayer,
 		}, {
 			Path:        "/game/init/{id}",
-			Method:      "GET",
+			Methods:     []string{"GET"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			Handler:     handlers.HandleStartGame,
 		}, {
 			Path:        "/game/exit/{id}",
-			Method:      "GET",
+			Methods:     []string{"GET"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			Handler:     handlers.HandleExitGame,
 		}, {
 			Path:        "/game/update",
-			Method:      "PUT",
+			Methods:     []string{"PUT"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			Handler:     handlers.HandleUpdateGame,
 		}, {
 			Path:        "/game/{id}",
-			Method:      "GET",
+			Methods:     []string{"GET"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			Handler:     handlers.HandleGetGame,
 		}, {
 			Path:        "/player/reset/{id}",
-			Method:      "GET",
+			Methods:     []string{"GET"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			Handler:     handlers.HandleResetPassword,
 		}, {
 			Path:        "/player",
-			Method:      "PUT",
+			Methods:     []string{"PUT"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			Handler:     handlers.HandleUpdatePlayer,
 		}, {
 			Path:        "/player",
-			Method:      "POST",
+			Methods:     []string{"POST"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			Handler:     handlers.HandleCreatePlayer,
 		}, {
 			Path:        "/player",
-			Method:      "GET",
+			Methods:     []string{"GET"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			Handler:     handlers.HandleGetPlayer,
 		}, {
 			Path:    "/test",
-			Method:  "GET",
+			Methods: []string{"GET"},
 			Handler: handlers.HandleTestSetup,
 		}, {
 			Path:    "/import/dealer/{id}",
-			Method:  "POST",
+			Methods: []string{"POST"},
 			Handler: handlers.HandleImportDealerCards,
 		}, {
 			Path:    "/import/card/{id}",
-			Method:  "POST",
+			Methods: []string{"POST"},
 			Handler: handlers.HandleImportCards,
 		}, {
 			Path:        "/card",
-			Method:      "POST",
+			Methods:     []string{"POST"},
 			Handler:     handlers.HandleCreateCard,
 			Middlewares: []easyrouter.Middleware{Cors},
 		}, {
 			Path:        "/card/{user}",
-			Method:      "PUT",
+			Methods:     []string{"PUT"},
 			Handler:     handlers.HandleUpdateCard,
 			Middlewares: []easyrouter.Middleware{Cors, SuperUser},
 		}, {
 			Path:        "/dealer",
-			Method:      "POST",
+			Methods:     []string{"POST"},
 			Handler:     handlers.HandleCreateDealerCard,
 			Middlewares: []easyrouter.Middleware{Cors},
 		}, {
 			Path:        "/dealer/{user}",
-			Method:      "PUT",
+			Methods:     []string{"PUT"},
 			Handler:     handlers.HandleUpdateDealerCard,
 			Middlewares: []easyrouter.Middleware{Cors, SuperUser},
 		}, {
 			Path:        "/unreviewed",
-			Method:      "GET",
+			Methods:     []string{"GET"},
 			Handler:     handlers.HandleUnreviewedCards,
 			Middlewares: []easyrouter.Middleware{Cors},
 		}, {
 			Path:    "/export/dealer/{file}",
-			Method:  "GET",
+			Methods: []string{"GET"},
 			Handler: handlers.HandleExportDealerDeck,
 		}, {
 			Path:    "/export/cards/{file}",
-			Method:  "POST",
+			Methods: []string{"POST"},
 			Handler: handlers.HandleExportDeck,
 		}, {
 			Path:        "/auth",
-			Method:      "POST",
+			Methods:     []string{"POST"},
 			Middlewares: []easyrouter.Middleware{Cors},
 			Handler:     handlers.HandleAuthenticate,
 		}, {
 			Path:    "/status",
-			Method:  "GET",
+			Methods: []string{"GET"},
 			Handler: handlers.HandleDefault,
 		}, {
 			Path:    "/",
@@ -155,13 +156,17 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	port_env := os.Getenv("PORT")
+	if port_env != "" {
+		*port = port_env
+	}
 
 	s := easyrouter.Server{
 		Port:   *port,
 		Routes: routes,
 		DefaultRoute: easyrouter.Route{
 			Path:    "/status",
-			Method:  "GET",
+			Methods: []string{"GET"},
 			Handler: handlers.HandleDefault,
 		},
 		Middlewares: []easyrouter.Middleware{Cors},

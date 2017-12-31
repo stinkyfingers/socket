@@ -28,6 +28,10 @@ func getDialInfo() *mgo.DialInfo {
 	if admin == "" {
 		admin = "admin"
 	}
+	db := os.Getenv("MONGO_DB")
+	if db != "" {
+		DB = db
+	}
 
 	return &mgo.DialInfo{
 		Addrs:    []string{cs},

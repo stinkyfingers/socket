@@ -33,6 +33,7 @@ var UserStore = Reflux.createStore({
 			method: method,
 			body: JSON.stringify(user)
 		}).then((resp) => {
+			console.log(url)
 			code = resp.status;
 			return resp.json();
 		}).then((resp) => {
@@ -51,6 +52,7 @@ var UserStore = Reflux.createStore({
 		fetch(url, {
 			method: 'GET'
 		}).then((resp) => {
+			console.log(resp)
 			code = resp.status;
 			return resp.json();
 		}).then((resp) => {
