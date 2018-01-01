@@ -34,6 +34,7 @@ var GameStore = Reflux.createStore({
 			code = resp.status;
 			return resp.json();
 		}).then((resp) => {
+			console.log(resp)
 			if (code !== 200) {
 				this.trigger({ error: resp });
 				return;
@@ -82,6 +83,7 @@ var GameStore = Reflux.createStore({
 	},
 
 	exitGame: function(game) {
+		this.unsetGame(game._id)
 		let code = 0;
 		const url = config.api + '/game/exit/' + game._id;
 		fetch(url, {
@@ -94,7 +96,6 @@ var GameStore = Reflux.createStore({
 				this.trigger({ error: resp });
 				return;
 			}
-			this.unsetGame(resp);
 			this.trigger({ game: null });
 		});
 	},
